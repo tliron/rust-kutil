@@ -1,0 +1,25 @@
+[package]
+edition = "2021"
+
+name = "kutil-cli"
+description = "CLI utilities from Kutil"
+version = "0.0.1"
+rust-version = "1.83"
+
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/tliron/rust-compris"
+documentatoin = "https://docs.rs/compris"
+authors = ["Tal Liron"]
+
+readme = "../../README.md"
+
+categories = ["command-line-utilities"] # https://crates.io/category_slugs
+keywords = ["kutil", "cli", "clap"]
+
+[dependencies]
+anstream = "0.6.18"
+anstyle = "1.0.10"
+clap = { version = "4.5.23", features = ["derive"] }
+owo-colors = "4.1.0"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
