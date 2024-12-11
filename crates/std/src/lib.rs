@@ -1,7 +1,7 @@
 #![warn(missing_docs)]
 
 /*!
-Various Rust utilities for CLI programs.
+Various Rust utilities to enhance the standard library.
 
 Part of the Kutil family of Rust utility libraries.
 
@@ -11,14 +11,14 @@ For more information and usage examples see the
 [home page](https://github.com/tliron/rust-kutil).
 */
 
-/// Clap utilities.
-pub mod clap;
+/// Borrow utilities.
+pub mod borrow;
 
-/// Debugging utilities.
-pub mod debug;
+/// Error utilities.
+pub mod error;
 
-/// Logging and tracing utilities.
-pub mod log;
+/// Iteration utilities.
+pub mod iter;
 
-/// Main loop utilities.
-pub mod run;
+/// String utilities.
+pub mod string;

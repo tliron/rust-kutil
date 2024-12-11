@@ -3,12 +3,12 @@ edition = "2021"
 
 name = "kutil-cli"
 description = "CLI utilities from Kutil"
-version = "0.0.1"
-rust-version = "1.83"
+version = "0.0.3"
+rust-version = "1.84"
 
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/tliron/rust-compris"
-documentatoin = "https://docs.rs/compris"
+repository = "https://github.com/tliron/rust-kutil"
+documentation = "https://docs.rs/kutil-cli"
 authors = ["Tal Liron"]
 
 readme = "../../README.md"
@@ -19,7 +19,19 @@ keywords = ["kutil", "cli", "clap"]
 [dependencies]
 anstream = "0.6.18"
 anstyle = "1.0.10"
-clap = { version = "4.5.23", features = ["derive"] }
+clap = { version = "4.5.26", features = ["derive"] }
+clap_complete_command = "0.6.1"
+kutil-cli-macros = { optional = true, path = "../cli-macros", version = "0.0.1" }
 owo-colors = "4.1.0"
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+
+[dev-dependencies]
+kutil-std = { path = "../std", version = "0.0.2" }
+
+[features]
+derive = ["dep:kutil-cli-macros"]
+
+[[example]]
+name = "debuggable_derive"
+required-features = ["derive"]

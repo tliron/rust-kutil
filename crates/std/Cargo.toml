@@ -1,0 +1,17 @@
+[package]
+edition = "2021"
+
+name = "kutil-std"
+description = "std utilities from Kutil"
+version = "0.0.2"
+rust-version = "1.84"
+
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/tliron/rust-kutil"
+documentation = "https://docs.rs/kutil-std"
+authors = ["Tal Liron"]
+
+readme = "../../README.md"
+
+categories = [] # https://crates.io/category_slugs
+keywords = ["kutil", "std"]
