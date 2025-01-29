@@ -1,4 +1,4 @@
-use {kutil_cli::debug::*, kutil_std::iter::*, owo_colors::*, std::io::*};
+use {kutil_cli::debug::*, kutil_std::iter::*, std::io::*};
 
 // It's pretty easy to implement Debuggable manually
 
@@ -22,17 +22,17 @@ impl Node {
 impl Debuggable for Node {
     // You just need to implement this function
 
-    fn write_debug_representation<WriteT>(&self, writer: &mut WriteT, prefix: &DebugPrefix, theme: &Theme) -> Result<()>
+    fn write_debug_for<WriteT>(&self, writer: &mut WriteT, context: &DebugContext) -> Result<()>
     where
         WriteT: Write,
     {
         // We'll use the provided theme
-        write!(writer, "{}", self.name.style(theme.string))?;
+        context.theme.write_string(writer, &self.name)?;
 
-        // DebugPrefix helps us follow the rules and build a recursive, nested horizontal tree
+        // The context helps us follow the rules and build a recursive, nested horizontal tree
         for (child, last) in IterateWithLast::new(&self.children) {
-            prefix.write_with_branch(writer, last)?;
-            child.write_debug_representation(writer, &prefix.with_branch(last), theme)?;
+            context.indent_into_branch(writer, last)?;
+            child.write_debug_for(writer, &context.child().increase_indentation_branch(last))?;
         }
 
         Ok(())

@@ -4,7 +4,7 @@ use {clap::*, clap_complete_command::*, std::io};
 // Completion
 //
 
-/// Clap command to generate shell autocompletion scripts.
+/// Clap command to generate shell auto-completion scripts.
 #[derive(Args)]
 pub struct Completion {
     /// shell
@@ -14,7 +14,10 @@ pub struct Completion {
 
 impl Completion {
     /// Run command.
-    pub fn run<C: Parser>(&self) {
-        self.shell.generate(&mut C::command(), &mut io::stdout());
+    pub fn run<ParserT>(&self)
+    where
+        ParserT: Parser,
+    {
+        self.shell.generate(&mut ParserT::command(), &mut io::stdout());
     }
 }

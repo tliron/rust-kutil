@@ -71,7 +71,7 @@ where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
     ErrorT: Into<Box<dyn Error + Send + Sync>>,
 {
-    fn poll_read(self: Pin<&mut Self>, context: &mut Context<'_>, buf: &mut ReadBuf<'_>) -> Poll<io::Result<()>> {
+    fn poll_read(self: Pin<&mut Self>, context: &mut Context<'_>, buffer: &mut ReadBuf<'_>) -> Poll<io::Result<()>> {
         let this = self.get_mut();
 
         let status = this.ensure_chunk(context);
@@ -80,7 +80,7 @@ where
             if ready.is_ok() {
                 if let Some(chunk) = &this.chunk {
                     // What we want
-                    let mut chunk_end = this.chunk_start + buf.remaining();
+                    let mut chunk_end = this.chunk_start + buffer.remaining();
 
                     // What we can do
                     let chunk_len = chunk.len();
@@ -88,7 +88,7 @@ where
                         chunk_end = chunk_len;
                     }
 
-                    buf.put_slice(&chunk[this.chunk_start..chunk_end]);
+                    buffer.put_slice(&chunk[this.chunk_start..chunk_end]);
 
                     this.chunk_start = chunk_end;
                 }

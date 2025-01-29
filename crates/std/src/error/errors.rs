@@ -9,7 +9,7 @@ use std::{error::*, fmt, iter::*, slice, vec};
 /// An [Error] that contains zero or more errors.
 ///
 /// Implements [ErrorRecipient] by accumulating errors.
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug)]
 pub struct Errors<ErrorT> {
     /// The errors.
     pub errors: Vec<ErrorT>,
@@ -50,10 +50,10 @@ where
     ErrorT: fmt::Display,
 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut i = self.errors.iter().peekable();
-        while let Some(error) = i.next() {
+        let mut iterator = self.errors.iter().peekable();
+        while let Some(error) = iterator.next() {
             fmt::Display::fmt(error, formatter)?;
-            if i.peek().is_some() {
+            if iterator.peek().is_some() {
                 writeln!(formatter)?;
             }
         }
@@ -114,10 +114,30 @@ impl<ErrorT> Into<Vec<ErrorT>> for Errors<ErrorT> {
 pub trait AsErrorsResult<ReturnT, ErrorT> {
     /// Converts to a [Result] with [Errors].
     fn as_errors(self) -> Result<ReturnT, Errors<ErrorT>>;
+
+    /// If there is an error gives it, otherwise returns the default value.
+    fn give_or<E, ErrorRecipientT>(self, default: ReturnT, errors: &mut ErrorRecipientT) -> Result<ReturnT, E>
+    where
+        ErrorT: Into<E>,
+        ErrorRecipientT: ErrorRecipient<E>;
 }
 
 impl<ReturnT, ErrorT> AsErrorsResult<ReturnT, ErrorT> for Result<ReturnT, ErrorT> {
     fn as_errors(self) -> Result<ReturnT, Errors<ErrorT>> {
         Ok(self?)
+    }
+
+    fn give_or<E, ErrorRecipientT>(self, default: ReturnT, errors: &mut ErrorRecipientT) -> Result<ReturnT, E>
+    where
+        ErrorT: Into<E>,
+        ErrorRecipientT: ErrorRecipient<E>,
+    {
+        match self {
+            Ok(ok) => Ok(ok),
+            Err(error) => {
+                errors.give(error.into())?;
+                Ok(default)
+            }
+        }
     }
 }

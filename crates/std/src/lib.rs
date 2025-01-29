@@ -14,6 +14,9 @@ For more information and usage examples see the
 /// Borrow utilities.
 pub mod borrow;
 
+/// Collections utilities.
+pub mod collections;
+
 /// Error utilities.
 pub mod error;
 
@@ -22,3 +25,6 @@ pub mod iter;
 
 /// String utilities.
 pub mod string;
+
+/// Synchronization utilities.
+pub mod sync;

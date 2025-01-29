@@ -11,8 +11,8 @@ For more information and usage examples see the
 [home page](https://github.com/tliron/rust-kutil).
 */
 
-/// Utilities for [Stream](futures::Stream) of [Bytes](bytes::Bytes).
-pub mod bytes_stream;
+/// Utilities for networking.
+pub mod network;
 
 /// Utilities for [io::Read](std::io::Read).
 pub mod reader;

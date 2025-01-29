@@ -1,3 +1,12 @@
 [workspace]
-members = ["crates/cli", "crates/cli-macros", "crates/io", "crates/std"]
+members = [
+    "crates/cli",
+    "crates/cli-macros",
+    "crates/io",
+    #"crates/server",
+    "crates/std",
+]
 resolver = "3"
+
+# [patch.crates-io]
+# compris = { path = "../rust-compris/crates/library" }

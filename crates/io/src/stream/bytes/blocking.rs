@@ -1,4 +1,4 @@
-use super::super::stream::*;
+use super::super::blocking::*;
 
 use {
     bytes::*,

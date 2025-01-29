@@ -47,10 +47,10 @@ pub struct FieldAttribute {
 
 #[derive(Default, ParseMetaItem)]
 pub enum As {
-    Display,
     #[default]
     Debug,
     DebugAlt,
+    Display,
     Debuggable,
 }
 
@@ -58,16 +58,10 @@ impl As {
     /// Write it.
     pub fn generate_write_value(&self, style: &Style) -> TokenStream {
         match self {
-            As::Display => {
-                let value = style.style(quote! { format!("{}", value) });
-                quote! {
-                    ::std::write!(writer, "{}", #value)?;
-                }
-            }
-
             As::Debug => {
                 let value = style.style(quote! { format!("{:?}", value) });
                 quote! {
+                    child_context.separate(writer)?;
                     ::std::write!(writer, "{}", #value)?;
                 }
             }
@@ -75,12 +69,21 @@ impl As {
             As::DebugAlt => {
                 let value = style.style(quote! { format!("{:#?}", value) });
                 quote! {
+                    child_context.separate(writer)?;
+                    ::std::write!(writer, "{}", #value)?;
+                }
+            }
+
+            As::Display => {
+                let value = style.style(quote! { format!("{}", value) });
+                quote! {
+                    child_context.separate(writer)?;
                     ::std::write!(writer, "{}", #value)?;
                 }
             }
 
             As::Debuggable => quote! {
-                value.write_debug_representation(writer, child_prefix, theme)?;
+                value.write_debug_for(writer, child_context)?;
             },
         }
     }
@@ -109,14 +112,14 @@ impl Style {
     pub fn style(&self, value: TokenStream) -> TokenStream {
         match self {
             Style::None => value,
-            Style::Bare => quote! { theme.bare.style(#value) },
-            Style::Number => quote! { theme.number.style(#value) },
-            Style::String => quote! { theme.string.style(#value) },
-            Style::Name => quote! { theme.name.style(#value) },
-            Style::Meta => quote! { theme.meta.style(#value) },
-            Style::Error => quote! { theme.error.style(#value) },
-            Style::Delimiter => quote! { theme.delimiter.style(#value) },
-            Style::Heading => quote! { theme.heading.style(#value) },
+            Style::Bare => quote! { context.theme.bare(#value) },
+            Style::Number => quote! { context.theme.number(#value) },
+            Style::String => quote! { context.theme.string(#value) },
+            Style::Name => quote! { context.theme.name(#value) },
+            Style::Meta => quote! { context.theme.meta(#value) },
+            Style::Error => quote! { context.theme.error(#value) },
+            Style::Delimiter => quote! { context.theme.delimiter(#value) },
+            Style::Heading => quote! { context.theme.heading(#value) },
         }
     }
 }

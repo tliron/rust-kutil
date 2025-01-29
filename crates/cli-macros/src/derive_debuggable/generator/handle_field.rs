@@ -10,44 +10,47 @@ impl Generator {
 
         let tag = match &field.attribute.tag {
             Some(tag) => quote! {
-                #tag(self, #quoted_field_name, writer, prefix, theme)?;
+                #tag(self, #quoted_field_name, writer, context)?;
             },
+
             None => TokenStream::new(),
         };
 
         let write_value = field.attribute.value_as.generate_write_value(&field.attribute.value_style);
 
-        let (write_prefix, sub_prefix) = match self.struct_attribute.branch {
-            Branch::Thin => {
-                (quote! { prefix.write_with_branch(writer, #last)?; }, quote! { &prefix.with_branch(#last) })
-            }
-            Branch::Thick => (
-                quote! { prefix.write_with_thick_branch(writer, #last)?; },
-                quote! { &prefix.with_thick_branch(#last) },
+        let (indent, item_context) = match self.struct_attribute.branch {
+            Branch::Thin => (
+                quote! { context.indent_into_branch(writer, #last)?; },
+                quote! { &context.child().with_inline(true).increase_indentation_branch(#last) },
             ),
+
+            Branch::Thick => (
+                quote! { context.indent_into_thick_branch(writer, #last)?; },
+                quote! { &context.child().with_inline(true).increase_indentation_thick_branch(#last) },
+            ),
+
             Branch::Double => (
-                quote! { prefix.write_with_double_branch(writer, #last)?; },
-                quote! { &prefix.with_double_branch(#last) },
+                quote! { context.indent_into_double_branch(writer, #last)?; },
+                quote! { &context.child().with_inline(true).increase_indentation_double_branch(#last) },
             ),
         };
 
         let mut write = match &field.attribute.iter {
             Iter::None => quote! {
-                ::std::write!(writer, " ")?;
-                let child_prefix = #sub_prefix;
+                let item_context = #item_context;
+                let child_context = &item_context.child().with_inline(true);
                 #write_value
                 #tag
             },
 
             Iter::Item => quote! {
-                let item_prefix = #sub_prefix;
-                let child_prefix = &item_prefix.with("  ");
+                let child_context = #item_context;
                 let mut empty = true;
 
                 for item in value {
                     empty = false;
 
-                    item_prefix.write_with(writer, "- ")?;
+                    child_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_LIST_ITEM)?;
                     let value = item;
                     #write_value
 
@@ -55,33 +58,61 @@ impl Generator {
                 }
 
                 if empty {
-                    ::std::write!(writer, " {}", theme.delimiter.style("[]"))?;
+                    context.separate(writer)?;
+                    context.theme.write_delimiter(writer, "[]")?;
                 }
             },
 
             Iter::KeyValue => {
                 let write_key = field.attribute.key_as.generate_write_value(&field.attribute.key_style);
                 quote! {
-                    let item_prefix = #sub_prefix;
-                    let child_prefix = &item_prefix.with("  ");
+                    let item_context = #item_context;
                     let mut empty = true;
 
-                    for (k, v) in value {
-                        empty = false;
+                    match item_context.format {
+                        ::kutil_cli::debug::DebugFormat::Reduced => {
+                            let key_context = item_context.child().with_separator(true).with_format(::kutil_cli::debug::DebugFormat::Compact);
+                            let value_context = item_context.child().with_inline(true).with_separator(true).increase_indentation();
 
-                        item_prefix.write_with(writer, "? ")?;
-                        let value = k;
-                        #write_key
+                            for (k, v) in value {
+                                empty = false;
 
-                        item_prefix.write_with(writer, ": ")?;
-                        let value = v;
-                        #write_value
+                                item_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_MAP_ENTRY)?;
+                                let value = k;
+                                let child_context = &key_context;
+                                #write_key
 
-                        #tag
+                                context.theme.write_delimiter(writer, ::kutil_cli::debug::utils::DEBUG_MAP_ENTRY_SEPARATOR)?;
+                                let value = v;
+                                let child_context = &value_context;
+                                #write_value
+
+                                #tag
+                            }
+                        }
+
+                        _ => {
+                            let child_context = item_context;
+
+                            for (k, v) in value {
+                                empty = false;
+
+                                item_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_MAP_KEY)?;
+                                let value = k;
+                                #write_key
+
+                                item_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_MAP_VALUE)?;
+                                let value = v;
+                                #write_value
+
+                                #tag
+                            }
+                        }
                     }
 
                     if empty {
-                        ::std::write!(writer, " {}", theme.delimiter.style("{}"))?;
+                        context.separate(writer)?;
+                        context.theme.write_delimiter(writer, "{}")?;
                     }
                 }
             }
@@ -93,7 +124,11 @@ impl Generator {
                     Some(value) => {
                         #write
                     },
-                    None => ::std::write!(writer, " {}", theme.bare.style("None"))?,
+
+                    None => {
+                        context.separate(writer)?;
+                        context.theme.write_bare(writer, "None")?;
+                    },
                 }
             },
 
@@ -104,8 +139,9 @@ impl Generator {
         };
 
         quote! {
-            #write_prefix
-            ::std::write!(writer, "{}:", theme.meta.style(#quoted_field_name))?;
+            #indent
+            context.theme.write_meta(writer, #quoted_field_name)?;
+            context.theme.write_delimiter(writer, ":")?;
             #write
         }
     }

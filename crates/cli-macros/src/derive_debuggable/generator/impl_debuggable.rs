@@ -14,7 +14,7 @@ impl Generator {
 
         let tag = match &self.struct_attribute.tag {
             Some(tag) => quote! {
-                #tag(self, "", writer, prefix, theme)?;
+                #tag(self, "", writer, context)?;
             },
             None => TokenStream::new(),
         };
@@ -32,20 +32,20 @@ impl Generator {
                 #where_clause
             {
                 fn
-                    write_debug_representation
+                    write_debug_for
                     <WriteT>
                     (
                         &self,
                         writer: &mut WriteT,
-                        prefix: &::kutil_cli::debug::DebugPrefix,
-                        theme: &::kutil_cli::debug::Theme,
+                        context: &::kutil_cli::debug::DebugContext,
                     )
                     -> ::std::io::Result<()>
                     where WriteT: ::std::io::Write
                 {
-                    use ::owo_colors::OwoColorize;
+                    context.separate(writer)?;
+                    context.theme.write_heading(writer, #quoted_struct_name)?;
 
-                    ::std::write!(writer, "{}", theme.heading.style(#quoted_struct_name))?;
+                    let context = &context.child().with_separator(true);
 
                     #tag
 

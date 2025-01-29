@@ -5,7 +5,7 @@ use {anstream::ColorChoice, clap::*};
 //
 
 /// Colorization options for Clap.
-#[derive(ValueEnum, Clone, Default)]
+#[derive(Clone, Default, ValueEnum)]
 pub enum Colorize {
     /// Colorize if supported.
     #[default]

@@ -25,7 +25,7 @@ pub struct Generator {
 impl Generator {
     /// Generate.
     pub fn generate(item: &mut syn::ItemStruct) -> syn::Result<TokenStream> {
-        let generator = Generator::new(item)?;
+        let generator = Self::new(item)?;
         Ok(generator.generate_impl_debuggable())
     }
 
