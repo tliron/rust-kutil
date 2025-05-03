@@ -4,7 +4,8 @@ use std::iter::*;
 //  IterateWithFirstLast
 //
 
-/// Iterator providing first and last flags.
+/// [Iterator] providing first and last flags.
+#[derive(Clone, Debug)]
 pub struct IterateWithFirstLast<ItemT, IterableT>
 where
     IterableT: IntoIterator<Item = ItemT>,
@@ -37,7 +38,7 @@ where
             false
         };
 
-        self.iterator.next().map(|i| (i, first, self.iterator.peek().is_none()))
+        self.iterator.next().map(|item| (item, first, self.iterator.peek().is_none()))
     }
 }
 
@@ -45,7 +46,8 @@ where
 //  IterateWithFirst
 //
 
-/// Iterator providing first flag.
+/// [Iterator] providing first flag.
+#[derive(Clone, Debug)]
 pub struct IterateWithFirst<ItemT, IterableT>
 where
     IterableT: IntoIterator<Item = ItemT>,
@@ -78,7 +80,7 @@ where
             false
         };
 
-        self.iterator.next().map(|i| (i, first))
+        self.iterator.next().map(|item| (item, first))
     }
 }
 
@@ -86,7 +88,8 @@ where
 //  IterateWithLast
 //
 
-/// Iterator providing last flag.
+/// [Iterator] providing last flag.
+#[derive(Clone, Debug)]
 pub struct IterateWithLast<ItemT, IterableT>
 where
     IterableT: IntoIterator<Item = ItemT>,
@@ -111,6 +114,6 @@ where
     type Item = (ItemT, bool);
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.iterator.next().map(|i| (i, self.iterator.peek().is_none()))
+        self.iterator.next().map(|item| (item, self.iterator.peek().is_none()))
     }
 }

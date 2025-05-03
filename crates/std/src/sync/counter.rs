@@ -1,6 +1,7 @@
 use std::sync::atomic::*;
 
 /// Thread-safe counter.
+#[derive(Debug)]
 pub struct Counter(AtomicUsize);
 
 impl Counter {

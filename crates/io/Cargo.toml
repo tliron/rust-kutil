@@ -3,8 +3,8 @@ edition = "2024"
 
 name = "kutil-io"
 description = "I/O utilities from Kutil"
-version = "0.0.1"
-rust-version = "1.85"
+version = "0.0.3"
+rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -19,11 +19,16 @@ keywords = ["kutil", "io"]
 [dependencies]
 bytes = "1.10.1"
 futures = "0.3.31"
-netdev = "0.34.0"
-network-interface = "2.0.1"
-tokio = { version = "1.44.2", features = ["rt"] }
+kutil-std = "=0.0.4"
+netdev = "0.34.1"
+tokio = { version = "1.45.0", features = ["rt", "io-util"] }
 
 [features]
 default = ["blocking", "async"]
 blocking = []
 async = []
+
+# https://stackoverflow.com/a/61417700
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

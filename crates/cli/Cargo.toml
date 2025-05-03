@@ -3,8 +3,8 @@ edition = "2024"
 
 name = "kutil-cli"
 description = "CLI utilities from Kutil"
-version = "0.0.4"
-rust-version = "1.85"
+version = "0.0.6"
+rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -19,10 +19,10 @@ keywords = ["kutil", "cli", "clap"]
 [dependencies]
 anstream = "0.6.18"
 anstyle = "1.0.10"
-clap = { version = "4.5.37", features = ["derive"] }
+clap = { version = "4.5.38", features = ["derive"] }
 clap_complete_command = "0.6.1"
-kutil-cli-macros = { optional = true, path = "../cli-macros", version = "0.0.2" }
-owo-colors = "4.2.0"
+kutil-cli-macros = { optional = true, version = "=0.0.4" }
+owo-colors = "4.2.1"
 time = { version = "0.3.41", features = ["macros"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = [
@@ -31,7 +31,7 @@ tracing-subscriber = { version = "0.3.19", features = [
 ] }
 
 [dev-dependencies]
-kutil-std = { path = "../std", version = "0.0.2" }
+kutil-std = "=0.0.4"
 
 [features]
 derive = ["dep:kutil-cli-macros"]
@@ -39,3 +39,8 @@ derive = ["dep:kutil-cli-macros"]
 [[example]]
 name = "debuggable_derive"
 required-features = ["derive"]
+
+# https://stackoverflow.com/a/61417700
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

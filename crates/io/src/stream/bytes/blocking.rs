@@ -3,8 +3,11 @@ use super::super::blocking::*;
 use {
     bytes::*,
     futures::*,
-    std::{error::*, io},
+    kutil_std::error::*,
+    std::{cmp::*, io},
 };
+
+const REMAINDER_INITIAL_CAPACITY: usize = 8 * 1_024; // 8 KiB
 
 //
 // BlockingBytesStreamReader
@@ -21,75 +24,84 @@ where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
 {
     stream: BlockingStream<StreamT>,
-    chunk: Option<Bytes>,
-    chunk_start: usize,
+
+    /// Remainder.
+    pub remainder: BytesMut,
 }
 
 impl<StreamT, ErrorT> BlockingBytesStreamReader<StreamT, ErrorT>
 where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
-    ErrorT: Into<Box<dyn Error + Send + Sync>>,
+    ErrorT: Into<CapturedError>,
 {
     /// Constructor.
     pub fn new(stream: BlockingStream<StreamT>) -> Self {
-        Self { stream, chunk: None, chunk_start: 0 }
+        Self { stream, remainder: BytesMut::with_capacity(0) }
     }
 
-    fn ensure_chunk(&mut self) -> io::Result<()> {
-        if let Some(chunk) = &self.chunk {
-            // Are we at the end of the chunk?
-            if self.chunk_start >= chunk.len() {
-                self.chunk = None;
-                self.chunk_start = 0;
-            }
-        }
+    /// Back to the inner [Stream].
+    ///
+    /// Note that the stream may have changed if we have read from this reader, in which case the
+    /// returned remainder will be non-empty.
+    pub fn into_inner(self) -> (BlockingStream<StreamT>, BytesMut) {
+        (self.stream, self.remainder)
+    }
 
-        if self.chunk.is_none() {
-            // Next chunk
-            self.chunk = self.stream.next().transpose().map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
+    fn validate_remainder_capacity(&mut self) {
+        let capacity = self.remainder.capacity();
+        if capacity < REMAINDER_INITIAL_CAPACITY {
+            self.remainder.reserve(REMAINDER_INITIAL_CAPACITY - capacity);
         }
-
-        Ok(())
     }
 }
 
 impl<StreamT, ErrorT> io::Read for BlockingBytesStreamReader<StreamT, ErrorT>
 where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
-    ErrorT: Into<Box<dyn Error + Send + Sync>>,
+    ErrorT: Into<CapturedError>,
 {
-    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        let buf_len = buf.len();
-        let mut buf_start = 0;
-        let mut buf_end = 0;
+    fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+        let mut buffer_position = 0;
+        let mut buffer_remaining = buffer.len();
 
-        while buf_end < buf_len {
-            self.ensure_chunk()?;
+        // Copy as much as we can from the remainder
+        if self.remainder.has_remaining() {
+            let size = min(buffer_remaining, self.remainder.remaining());
 
-            match &self.chunk {
-                Some(chunk) => {
-                    // What we want
-                    let mut chunk_end = self.chunk_start + (buf_len - buf_start);
+            if size != 0 {
+                self.remainder.copy_to_slice(&mut buffer[..size]);
 
-                    // What we can do
-                    let chunk_len = chunk.len();
-                    if chunk_end > chunk_len {
-                        chunk_end = chunk_len;
-                        buf_end = buf_start + (chunk_end - self.chunk_start);
-                    } else {
-                        buf_end = buf_len;
-                    }
-
-                    buf[buf_start..buf_end].copy_from_slice(&chunk[self.chunk_start..chunk_end]);
-
-                    buf_start = buf_end;
-                    self.chunk_start = chunk_end;
+                if size == buffer_remaining {
+                    // Buffer is full
+                    return Ok(size);
                 }
 
-                None => break,
+                buffer_position += size;
+                buffer_remaining -= size;
             }
         }
 
-        Ok(buf_end)
+        match self.stream.next() {
+            Some(result) => {
+                let mut bytes = result.map_err(|error| io::Error::other(error))?;
+
+                // Copy as much as we can from the bytes
+                let size = min(buffer_remaining, bytes.remaining());
+
+                if size != 0 {
+                    bytes.copy_to_slice(&mut buffer[buffer_position..size]);
+                }
+
+                // Store leftover bytes in the remainder
+                if bytes.has_remaining() {
+                    self.validate_remainder_capacity();
+                    self.remainder.put(bytes);
+                }
+
+                Ok(buffer_position + size)
+            }
+
+            None => Ok(0),
+        }
     }
 }

@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil-cli-macros"
 description = "Procedural macros for kutil-cli"
-version = "0.0.2"
+version = "0.0.4"
 rust-version = "1.85"
 
 license = "MIT OR Apache-2.0"
@@ -24,3 +24,8 @@ deluxe = "0.5.0"
 proc-macro2 = "1.0.95"
 quote = "1.0.40"
 syn = "2.0.101"
+
+# https://stackoverflow.com/a/61417700
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

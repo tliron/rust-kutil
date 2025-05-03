@@ -4,8 +4,9 @@
 
 /// Debug format. Allows for variations of the debug respresentation.
 ///
-/// There is no requirement for a [Debuggable] to support the various formats, thus it can only be
-/// used reliably when the types are known in advance to support it.
+/// There is no requirement for a [Debuggable](super::debuggable::Debuggable) to support the
+/// various formats, thus it can only be used reliably when the types are known in advance to
+/// support it.
 #[derive(Clone, Debug, Default)]
 pub enum DebugFormat {
     /// Verbose implies a consistent full representation with no optional information omitted.

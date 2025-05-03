@@ -1,4 +1,5 @@
+mod converting;
 mod first_last;
 
 #[allow(unused_imports)]
-pub use first_last::*;
+pub use {converting::*, first_last::*};

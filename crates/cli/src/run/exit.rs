@@ -17,7 +17,7 @@ pub struct Exit {
 impl Exit {
     /// Constructor.
     pub fn new(code: u8, message: Option<&str>) -> Self {
-        let message = message.map(|m| m.into());
+        let message = message.map(|message| message.into());
         Self { code, message }
     }
 

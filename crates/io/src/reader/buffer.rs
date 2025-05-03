@@ -1,10 +1,13 @@
 use std::{io::*, sync::*};
 
-// Why do we need this?
 //
-// Because io::Cursor relies on AsRef<[u8]>, but Arc<Vec<u8>> does not implement it.
+// ReadableBuffer
+//
 
 /// An immutable buffer that can be read concurrently.
+///
+/// It's simply a buffer wrapped in an [Arc] and that can match the requirements of
+/// [Cursor].
 #[derive(Clone, Debug)]
 pub struct ReadableBuffer(Arc<Vec<u8>>);
 

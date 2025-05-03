@@ -2,11 +2,17 @@
 members = [
     "crates/cli",
     "crates/cli-macros",
+    "crates/http",
     "crates/io",
-    #"crates/server",
     "crates/std",
+    "crates/transcoding",
 ]
 resolver = "3"
 
-# [patch.crates-io]
-# compris = { path = "../rust-compris/crates/library" }
+[patch.crates-io]
+kutil-cli = { path = "crates/cli" }
+kutil-cli-macros = { path = "crates/cli-macros" }
+kutil-http = { path = "crates/http" }
+kutil-io = { path = "crates/io" }
+kutil-std = { path = "crates/std" }
+kutil-transcoding = { path = "crates/transcoding" }

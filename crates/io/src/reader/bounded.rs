@@ -4,13 +4,13 @@ use std::io;
 // BoundedReader
 //
 
-/// Bounded reader.
+/// Bounded [io::Read] wrapper.
 pub struct BoundedReader<ReadT>
 where
     ReadT: io::Read,
 {
     reader: ReadT,
-    max_bytes: usize,
+    max_size: usize,
     completed: usize,
 }
 
@@ -19,8 +19,8 @@ where
     ReadT: io::Read,
 {
     /// Constructor.
-    pub fn new(reader: ReadT, max_bytes: usize) -> Self {
-        Self { reader, max_bytes, completed: 0 }
+    pub fn new(reader: ReadT, max_size: usize) -> Self {
+        Self { reader, max_size, completed: 0 }
     }
 }
 
@@ -38,8 +38,8 @@ where
         let end = self.completed + buf_len;
 
         // What we can do
-        if end > self.max_bytes {
-            buf_len = self.max_bytes - self.completed;
+        if end > self.max_size {
+            buf_len = self.max_size - self.completed;
             if buf_len == 0 {
                 // Note: this is not just an optimization:
                 // some readers fail when given empty buffers

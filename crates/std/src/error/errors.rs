@@ -28,11 +28,7 @@ impl<ErrorT> Errors<ErrorT> {
 
     /// Fails with self if there are errors.
     pub fn check(&self) -> Result<(), &Self> {
-        if self.is_empty() {
-            Ok(())
-        } else {
-            Err(self)
-        }
+        if self.is_empty() { Ok(()) } else { Err(self) }
     }
 }
 
@@ -111,26 +107,26 @@ impl<ErrorT> Into<Vec<ErrorT>> for Errors<ErrorT> {
 //
 
 /// Converts to a [Result] with [Errors].
-pub trait AsErrorsResult<ReturnT, ErrorT> {
-    /// Converts to a [Result] with [Errors].
-    fn as_errors(self) -> Result<ReturnT, Errors<ErrorT>>;
+pub trait AsErrorsResult<OkT, ErrorT> {
+    /// Convert to a [Result] with [Errors].
+    fn as_errors(self) -> Result<OkT, Errors<ErrorT>>;
 
-    /// If there is an error gives it, otherwise returns the default value.
-    fn give_or<E, ErrorRecipientT>(self, default: ReturnT, errors: &mut ErrorRecipientT) -> Result<ReturnT, E>
+    /// If there is an error then gives it and returns the default value.
+    fn give_or<E, ErrorRecipientT>(self, default: OkT, errors: &mut ErrorRecipientT) -> Result<OkT, E>
     where
         ErrorT: Into<E>,
         ErrorRecipientT: ErrorRecipient<E>;
 }
 
-impl<ReturnT, ErrorT> AsErrorsResult<ReturnT, ErrorT> for Result<ReturnT, ErrorT> {
-    fn as_errors(self) -> Result<ReturnT, Errors<ErrorT>> {
+impl<OkT, ErrorT> AsErrorsResult<OkT, ErrorT> for Result<OkT, ErrorT> {
+    fn as_errors(self) -> Result<OkT, Errors<ErrorT>> {
         Ok(self?)
     }
 
-    fn give_or<E, ErrorRecipientT>(self, default: ReturnT, errors: &mut ErrorRecipientT) -> Result<ReturnT, E>
+    fn give_or<IntoErrorT, ErrorRecipientT>(self, default: OkT, errors: &mut ErrorRecipientT) -> Result<OkT, IntoErrorT>
     where
-        ErrorT: Into<E>,
-        ErrorRecipientT: ErrorRecipient<E>,
+        ErrorT: Into<IntoErrorT>,
+        ErrorRecipientT: ErrorRecipient<IntoErrorT>,
     {
         match self {
             Ok(ok) => Ok(ok),

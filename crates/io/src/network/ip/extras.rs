@@ -13,8 +13,8 @@ pub trait IPExtras {
 impl IPExtras for IpAddr {
     fn is_reachable(&self) -> bool {
         match self {
-            Self::V6(ipv6) => ipv6.is_reachable(),
-            Self::V4(ipv4) => ipv4.is_reachable(),
+            Self::V6(address) => address.is_reachable(),
+            Self::V4(address) => address.is_reachable(),
         }
     }
 }
@@ -37,16 +37,16 @@ impl IPExtras for Ipv4Addr {
 
 /// IPv6 address extras.
 pub trait IPv6Extras {
-    /// See [IPv6Addr::is_unicast_global].
+    /// See [Ipv6Addr::is_unicast_global] (unstable).
     fn extras_is_unicast_global(&self) -> bool;
 
-    /// See [IPv6Addr::is_unicast].
+    /// See [Ipv6Addr::is_unicast] (unstable).
     fn extras_is_unicast(&self) -> bool;
 
-    /// See [IPv6Addr::is_documentation].
+    /// See [Ipv6Addr::is_documentation] (unstable).
     fn extras_is_documentation(&self) -> bool;
 
-    /// See [IPv6Addr::is_benchmarking].
+    /// See [Ipv6Addr::is_benchmarking] (unstable).
     fn extras_is_benchmarking(&self) -> bool;
 }
 
@@ -82,20 +82,20 @@ impl IPv6Extras for Ipv6Addr {
 
 /// IPv4 address extras.
 pub trait IPv4Extras {
-    /// See [IPv4Addr::is_global].
+    /// See [Ipv4Addr::is_global] (unstable).
     fn extras_is_almost_global(&self) -> bool;
 
-    /// See [IPv4Addr::is_shared].
+    /// See [Ipv4Addr::is_shared] (unstable).
     fn extras_is_shared(&self) -> bool;
 
-    /// See [IPv4Addr::is_benchmarking].
+    /// See [Ipv4Addr::is_benchmarking] (unstable).
     fn extras_is_benchmarking(&self) -> bool;
 
-    /// See [IPv4Addr::is_reserved].
+    /// See [Ipv4Addr::is_reserved] (unstable).
     fn extras_is_reserved(&self) -> bool;
 }
 
-// Copied from unstable
+// (Mostl) copied from unstable
 
 impl IPv4Extras for Ipv4Addr {
     fn extras_is_almost_global(&self) -> bool {

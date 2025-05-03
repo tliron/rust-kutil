@@ -117,19 +117,17 @@ pub trait Debuggable {
         self.eprint_debug_plain_with_format(DebugFormat::default());
     }
 
-    // to_debug_string
-
-    /// Capture [write_debug_representation](Debuggable::write_debug_representation) into a string.
+    /// Capture [write_debug_for](Debuggable::write_debug_for) into a string.
     fn to_debug_string_with_format(&self, theme: &Theme, format: DebugFormat) -> Result<String> {
         let mut writer = BufWriter::new(Vec::new());
         self.write_debug_for(&mut writer, &DebugContext::new(theme).with_format(format))?;
         match String::from_utf8(writer.into_inner().unwrap().into()) {
             Ok(string) => Ok(string),
-            Err(error) => Err(Error::new(ErrorKind::Other, format!("{}", error))),
+            Err(error) => Err(Error::other(format!("{}", error))),
         }
     }
 
-    /// Capture [write_debug_representation](Debuggable::write_debug_representation) into a string.
+    /// Capture [write_debug_for](Debuggable::write_debug_for) into a string.
     fn to_debug_string(&self, theme: &Theme) -> Result<String> {
         self.to_debug_string_with_format(theme, DebugFormat::default())
     }

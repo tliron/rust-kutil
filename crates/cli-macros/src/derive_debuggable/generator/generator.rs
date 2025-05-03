@@ -70,10 +70,10 @@ impl Generator {
                 continue;
             }
 
-            let field_name = match &field.ident {
-                Some(name) => name,
-                None => return Err(syn::Error::new(field.span(), "`debuggable` attribute: unnamed field")),
-            };
+            let field_name = field
+                .ident
+                .as_ref()
+                .ok_or_else(|| syn::Error::new(field.span(), "`debuggable` attribute: unnamed field"))?;
 
             generator.debuggable_fields.push(Field { name: field_name.to_token_stream(), attribute: field_attribute });
         }

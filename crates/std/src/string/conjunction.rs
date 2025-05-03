@@ -7,17 +7,17 @@ pub trait JoinConjunction<'own> {
     ///
     /// Examples:
     ///
-    /// * "one"
-    /// * "one or two"
-    /// * "one, two, or three"
-    /// * "one, two, three, or four"
+    /// * `one`
+    /// * `one or two`
+    /// * `one, two, or three`
+    /// * `one, two, three, or four`
     fn join_conjunction(&'own self, conjunction: &str) -> String;
 }
 
 impl<'own, IterableT, ItemT> JoinConjunction<'own> for IterableT
 where
-    ItemT: AsRef<str> + 'own,
-    &'own IterableT: IntoIterator<Item = ItemT> + 'own,
+    ItemT: 'own + AsRef<str>,
+    &'own IterableT: 'own + IntoIterator<Item = ItemT>,
 {
     fn join_conjunction(&'own self, conjunction: &str) -> String {
         let mut options = String::new();

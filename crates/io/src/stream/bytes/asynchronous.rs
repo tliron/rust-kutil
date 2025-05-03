@@ -1,15 +1,18 @@
 use {
     bytes::*,
-    futures::*,
-    std::{error::*, io, pin::*, task::*},
-    tokio::io::{AsyncRead, ReadBuf},
+    futures::{Stream, StreamExt},
+    kutil_std::error::*,
+    std::{cmp::*, io, pin::*, result::Result, task::*},
+    tokio::io::*,
 };
+
+const REMAINDER_INITIAL_CAPACITY: usize = 8 * 1_024; // 8 KiB
 
 //
 // AsyncBytesStreamReader
 //
 
-/// An [AsyncRead] implementation for a [Stream] of [Result]\<[Bytes], _\>.
+/// A Tokio [AsyncRead] implementation for a [Stream] of [Result]\<[Bytes], _\>.
 ///
 /// Errors are wrapped as [io::ErrorKind::Other].
 ///
@@ -20,81 +23,84 @@ where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
 {
     stream: StreamT,
-    chunk: Option<Bytes>,
-    chunk_start: usize,
+
+    /// Remainder.
+    pub remainder: BytesMut,
 }
 
 impl<StreamT, ErrorT> AsyncBytesStreamReader<StreamT, ErrorT>
 where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
-    ErrorT: Into<Box<dyn Error + Send + Sync>>,
+    ErrorT: Into<CapturedError>,
 {
     /// Constructor.
     pub fn new(stream: StreamT) -> Self {
-        Self { stream, chunk: None, chunk_start: 0 }
+        Self { stream, remainder: BytesMut::with_capacity(0) }
     }
 
-    fn ensure_chunk(&mut self, context: &mut Context<'_>) -> Poll<io::Result<()>> {
-        if let Some(chunk) = &self.chunk {
-            // Are we at the end of the chunk?
-            if self.chunk_start >= chunk.len() {
-                self.chunk = None;
-                self.chunk_start = 0;
-            }
+    /// Back to the inner [Stream].
+    ///
+    /// Note that the stream may have changed if we have read from this reader, in which case the
+    /// returned remainder will be non-empty.
+    pub fn into_inner(self) -> (StreamT, BytesMut) {
+        (self.stream, self.remainder)
+    }
+
+    fn validate_remainder_capacity(&mut self) {
+        let capacity = self.remainder.capacity();
+        if capacity < REMAINDER_INITIAL_CAPACITY {
+            self.remainder.reserve(REMAINDER_INITIAL_CAPACITY - capacity);
         }
-
-        if self.chunk.is_none() {
-            // Next chunk
-            match self.stream.poll_next_unpin(context) {
-                Poll::Ready(ready) => match ready {
-                    Some(result) => match result {
-                        Ok(chunk) => {
-                            self.chunk = Some(chunk);
-                        }
-
-                        Err(error) => return Poll::Ready(Err(io::Error::new(io::ErrorKind::Other, error))),
-                    },
-
-                    None => {}
-                },
-
-                Poll::Pending => return Poll::Pending,
-            }
-        }
-
-        Poll::Ready(Ok(()))
     }
 }
 
 impl<StreamT, ErrorT> AsyncRead for AsyncBytesStreamReader<StreamT, ErrorT>
 where
     StreamT: Stream<Item = Result<Bytes, ErrorT>> + Unpin,
-    ErrorT: Into<Box<dyn Error + Send + Sync>>,
+    ErrorT: Into<CapturedError>,
 {
-    fn poll_read(self: Pin<&mut Self>, context: &mut Context<'_>, buffer: &mut ReadBuf<'_>) -> Poll<io::Result<()>> {
-        let this = self.get_mut();
+    fn poll_read(
+        mut self: Pin<&mut Self>,
+        context: &mut Context<'_>,
+        buffer: &mut ReadBuf<'_>,
+    ) -> Poll<io::Result<()>> {
+        // Copy as much as we can from the remainder
+        if self.remainder.has_remaining() {
+            let size = min(buffer.remaining_mut(), self.remainder.remaining());
 
-        let status = this.ensure_chunk(context);
+            if size != 0 {
+                let bytes = self.remainder.copy_to_bytes(size);
+                buffer.put(bytes);
 
-        if let Poll::Ready(ready) = &status {
-            if ready.is_ok() {
-                if let Some(chunk) = &this.chunk {
-                    // What we want
-                    let mut chunk_end = this.chunk_start + buffer.remaining();
-
-                    // What we can do
-                    let chunk_len = chunk.len();
-                    if chunk_end > chunk_len {
-                        chunk_end = chunk_len;
-                    }
-
-                    buffer.put_slice(&chunk[this.chunk_start..chunk_end]);
-
-                    this.chunk_start = chunk_end;
+                if !buffer.has_remaining_mut() {
+                    // Buffer is full
+                    return Poll::Ready(Ok(()));
                 }
             }
         }
 
-        status
+        Poll::Ready(match ready!(self.stream.poll_next_unpin(context)) {
+            Some(result) => {
+                let mut bytes = result.map_err(|error| io::Error::other(error))?;
+
+                // Copy as much as we can from the bytes
+                let size = min(buffer.remaining_mut(), bytes.remaining());
+
+                if size != 0 {
+                    let bytes = bytes.copy_to_bytes(size);
+                    buffer.put(bytes);
+                }
+
+                // Store leftover bytes in the remainder
+                if bytes.has_remaining() {
+                    self.validate_remainder_capacity();
+                    self.remainder.put(bytes);
+                }
+
+                Ok(())
+            }
+
+            None => Ok(()),
+        })
     }
 }
