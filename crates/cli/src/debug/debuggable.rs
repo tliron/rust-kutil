@@ -125,7 +125,7 @@ pub trait Debuggable {
         self.write_debug_for(&mut writer, &DebugContext::new(theme).with_format(format))?;
         match String::from_utf8(writer.into_inner().unwrap().into()) {
             Ok(string) => Ok(string),
-            Err(error) => Err(Error::new(ErrorKind::Other, format!("{}", error))),
+            Err(error) => Err(Error::other(format!("{}", error))),
         }
     }
 

@@ -4,7 +4,7 @@ edition = "2024"
 name = "kutil-std"
 description = "std utilities from Kutil"
 version = "0.0.2"
-rust-version = "1.85"
+rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -17,5 +17,5 @@ categories = []             # https://crates.io/category_slugs
 keywords = ["kutil", "std"]
 
 [dependencies]
-ahash = "0.8.11"
+ahash = "0.8.12"
 papaya = "0.2.1"

@@ -5,6 +5,7 @@ use std::iter::*;
 //
 
 /// Iterator providing first and last flags.
+#[derive(Clone, Debug)]
 pub struct IterateWithFirstLast<ItemT, IterableT>
 where
     IterableT: IntoIterator<Item = ItemT>,
@@ -46,6 +47,7 @@ where
 //
 
 /// Iterator providing first flag.
+#[derive(Clone, Debug)]
 pub struct IterateWithFirst<ItemT, IterableT>
 where
     IterableT: IntoIterator<Item = ItemT>,
@@ -87,6 +89,7 @@ where
 //
 
 /// Iterator providing last flag.
+#[derive(Clone, Debug)]
 pub struct IterateWithLast<ItemT, IterableT>
 where
     IterableT: IntoIterator<Item = ItemT>,

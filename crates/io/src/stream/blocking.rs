@@ -1,4 +1,4 @@
-use {futures::*, std::ops::*, tokio::runtime};
+use {futures::*, tokio::runtime};
 
 //
 // BlockingStream
@@ -22,29 +22,9 @@ where
         Self { stream, runtime }
     }
 
-    /// Into inner.
+    /// Back to the inner [Stream].
     pub fn into_inner(self) -> StreamT {
         self.stream
-    }
-}
-
-impl<StreamT> Deref for BlockingStream<StreamT>
-where
-    StreamT: Stream + Unpin,
-{
-    type Target = StreamT;
-
-    fn deref(&self) -> &Self::Target {
-        &self.stream
-    }
-}
-
-impl<StreamT> DerefMut for BlockingStream<StreamT>
-where
-    StreamT: Stream + Unpin,
-{
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.stream
     }
 }
 

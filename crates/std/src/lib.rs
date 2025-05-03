@@ -11,6 +11,9 @@ For more information and usage examples see the
 [home page](https://github.com/tliron/rust-kutil).
 */
 
+/// Foster utilities.
+pub mod foster;
+
 /// Borrow utilities.
 pub mod borrow;
 
@@ -19,6 +22,9 @@ pub mod collections;
 
 /// Error utilities.
 pub mod error;
+
+/// Future utilities.
+pub mod future;
 
 /// Iteration utilities.
 pub mod iter;
