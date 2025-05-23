@@ -10,9 +10,10 @@ use {
 /// Collection of theme for printing text.
 ///
 /// See [Debuggable](super::debuggable::Debuggable).
+#[derive(Clone, Debug)]
 pub struct Theme {
-    /// For bare words: true, false, null, etc.
-    pub bare_style: Style,
+    /// For symbols: true, false, null, None, etc.
+    pub symbol_style: Style,
 
     /// For numbers.
     pub number_style: Style,
@@ -40,7 +41,7 @@ impl Theme {
     /// Plain theme.
     pub fn plain() -> Self {
         Self {
-            bare_style: Style::new(),
+            symbol_style: Style::new(),
             number_style: Style::new(),
             string_style: Style::new(),
             name_style: Style::new(),
@@ -51,9 +52,9 @@ impl Theme {
         }
     }
 
-    /// Apply bare style.
-    pub fn bare<ThingT>(&self, thing: ThingT) -> Styled<ThingT> {
-        self.bare_style.style(thing)
+    /// Apply symbol style.
+    pub fn symbol<ThingT>(&self, thing: ThingT) -> Styled<ThingT> {
+        self.symbol_style.style(thing)
     }
 
     /// Apply number style.
@@ -91,13 +92,13 @@ impl Theme {
         self.delimiter_style.style(thing)
     }
 
-    /// Write [fmt::Display] in bare style.
-    pub fn write_bare<WriteT, ThingT>(&self, writer: &mut WriteT, thing: ThingT) -> io::Result<()>
+    /// Write [fmt::Display] in symbol style.
+    pub fn write_symbol<WriteT, ThingT>(&self, writer: &mut WriteT, thing: ThingT) -> io::Result<()>
     where
         WriteT: io::Write,
         ThingT: fmt::Display,
     {
-        write!(writer, "{}", self.bare(thing))
+        write!(writer, "{}", self.symbol(thing))
     }
 
     /// Write [fmt::Display] in number style.
@@ -167,7 +168,7 @@ impl Theme {
 impl Default for Theme {
     fn default() -> Self {
         Self {
-            bare_style: Style::new().yellow(),
+            symbol_style: Style::new().yellow(),
             number_style: Style::new().magenta(),
             string_style: Style::new().cyan(),
             name_style: Style::new().green(),

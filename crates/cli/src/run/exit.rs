@@ -5,7 +5,7 @@ use std::{error, fmt};
 //
 
 /// Information on how to exit a program.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Exit {
     /// Exit code.
     pub code: u8,
@@ -19,6 +19,14 @@ impl Exit {
     pub fn new(code: u8, message: Option<&str>) -> Self {
         let message = message.map(|message| message.into());
         Self { code, message }
+    }
+
+    /// Constructor.
+    pub fn new_from<ToStringT>(code: u8, to_string: ToStringT) -> Self
+    where
+        ToStringT: ToString,
+    {
+        Self { code, message: Some(to_string.to_string()) }
     }
 
     /// Successful exit (code 0) without a message.
@@ -43,6 +51,12 @@ impl fmt::Display for Exit {
 impl From<u8> for Exit {
     fn from(value: u8) -> Self {
         Self::new(value, None)
+    }
+}
+
+impl From<&str> for Exit {
+    fn from(message: &str) -> Self {
+        Self::new(1, Some(message))
     }
 }
 

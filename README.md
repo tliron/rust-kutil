@@ -13,8 +13,7 @@ Crates:
     [helpers](https://docs.rs/kutil-cli/latest/kutil_cli/clap/index.html)
   * [Initialize logging](https://docs.rs/kutil-cli/latest/kutil_cli/debug/index.html)
     (via [tracing](https://github.com/tokio-rs/tracing))
-  * The [Debuggable trait](https://docs.rs/kutil-cli/latest/kutil_cli/debug/index.html) is a
-    supercharged version of `Debug`
+  * The [Debuggable trait](https://docs.rs/kutil-cli/latest/kutil_cli/debug/index.html) is a supercharged version of `Debug`
 * [kutil-http](https://docs.rs/kutil-http):
   * [Easy access to headers](https://docs.rs/kutil-http/latest/kutil_http/trait.HeaderValues.html)
   * Conditional HTTP and content negotiation
@@ -22,8 +21,7 @@ Crates:
   * [Response caching layer with integrated encoding (compression) for Tower](https://docs.rs/kutil-http/latest/kutil_http/tower/caching/struct.CachingLayer.html)
 * [kutil-io](https://docs.rs/kutil-io):
   * Adapters and utilities for `Read`, `Stream`, and Tokio's `AsyncRead`
-  * [IP address discovery for servers](https://docs.rs/kutil-io/latest/kutil_io/network/ip/index.html)
-    (dual-stack IPv6 and IPv4)
+  * [IP address discovery for servers](https://docs.rs/kutil-io/latest/kutil_io/network/ip/index.html) (dual-stack IPv6 and IPv4)
 * [kutil-std](https://docs.rs/kutil-std):
   * [Fostering](https://docs.rs/kutil-std/latest/kutil_std/foster/index.html)
   * [Error accumulation](https://docs.rs/kutil-std/latest/kutil_std/errors/index.html)
@@ -40,6 +38,4 @@ Like much of the Rust ecosystem, licensed under your choice of either of
 * [Apache License, Version 2.0](LICENSE-APACHE)
 * [MIT license](LICENSE-MIT)
 
-Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in
-the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any
-additional terms or conditions.
+Unless you explicitly state otherwise, any contribution intentionally submitted for inclusion in the work by you, as defined in the Apache-2.0 license, shall be dual licensed as above, without any additional terms or conditions.

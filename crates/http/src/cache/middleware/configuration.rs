@@ -21,8 +21,7 @@ pub const ENCODINGS_BY_PREFERENCE: &[EncodingHeaderValue] = &[
 //
 
 /// Middleware caching configuration.
-#[derive(Clone)]
-pub struct MiddlewareCachingConfiguration<CacheT, CacheKeyT> {
+pub struct MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT> {
     /// Cache.
     pub cache: Option<CacheT>,
 
@@ -33,13 +32,13 @@ pub struct MiddlewareCachingConfiguration<CacheT, CacheKeyT> {
     pub cacheable_by_response: Option<CacheableHook>,
 
     /// Cache key (hook).
-    pub cache_key: Option<CacheKeyHook<CacheKeyT>>,
+    pub cache_key: Option<CacheKeyHook<CacheKeyT, RequestBodyT>>,
 
     /// Inner configuration.
     pub inner: CachingConfiguration,
 }
 
-impl<CacheT, CacheKeyT> Default for MiddlewareCachingConfiguration<CacheT, CacheKeyT> {
+impl<RequestBodyT, CacheT, CacheKeyT> Default for MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT> {
     fn default() -> Self {
         Self {
             cache: None,
@@ -52,6 +51,23 @@ impl<CacheT, CacheKeyT> Default for MiddlewareCachingConfiguration<CacheT, Cache
                 cacheable_by_default: true,
                 cache_duration: None,
             },
+        }
+    }
+}
+
+impl<RequestBodyT, CacheT, CacheKeyT> Clone for MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>
+where
+    CacheT: Clone,
+{
+    fn clone(&self) -> Self {
+        // Unfortunately we can't get away with #[derive(Clone)]
+        // The culprit is the RequestBodyT generic param in CacheKeyHookContext
+        Self {
+            cache: self.cache.clone(),
+            cacheable_by_request: self.cacheable_by_request.clone(),
+            cacheable_by_response: self.cacheable_by_response.clone(),
+            cache_key: self.cache_key.clone(),
+            inner: self.inner.clone(),
         }
     }
 }

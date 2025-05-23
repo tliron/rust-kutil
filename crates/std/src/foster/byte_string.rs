@@ -1,20 +1,20 @@
 use super::{super::borrow::*, foster::*, has_length::*};
 
 use {
-    bytestr::*,
+    bytestring::*,
     std::{cmp::*, fmt, hash::*},
 };
 
-/// [Foster] for [ByteStr].
+/// [Foster] for [ByteString].
 ///
 /// Supports [IntoOwned], [HasLength], [AsRef]\<str\>, [Eq]/[PartialEq], [Ord]/[PartialOrd],
 /// [Hash], and [Display](fmt::Display).
 ///
-/// Note that we need to wrap [ByteStr] in a [Box] because [ByteStr] has interior mutability and
-/// thus cannot be placed as is in a constant.
-pub type FosterByteStr = Foster<Box<ByteStr>, &'static str>;
+/// Note that we need to wrap [ByteString] in a [Box] because [ByteString] has interior mutability and
+/// thus cannot be part of a constant value's type.
+pub type FosterByteString = Foster<Box<ByteString>, &'static str>;
 
-impl IntoOwned for FosterByteStr {
+impl IntoOwned for FosterByteString {
     /// Into owned.
     fn into_owned(self) -> Self {
         match self {
@@ -24,7 +24,7 @@ impl IntoOwned for FosterByteStr {
     }
 }
 
-impl HasLength for FosterByteStr {
+impl HasLength for FosterByteString {
     fn len(&self) -> usize {
         match self {
             Self::Owned(string) => string.len(),
@@ -33,13 +33,13 @@ impl HasLength for FosterByteStr {
     }
 }
 
-impl From<&str> for FosterByteStr {
+impl From<&str> for FosterByteString {
     fn from(string: &str) -> Self {
         Self::Owned(Box::new(string.into()))
     }
 }
 
-impl AsRef<str> for FosterByteStr {
+impl AsRef<str> for FosterByteString {
     fn as_ref(&self) -> &str {
         match self {
             Self::Owned(string) => string,
@@ -48,46 +48,52 @@ impl AsRef<str> for FosterByteStr {
     }
 }
 
-impl PartialEq for FosterByteStr {
+impl PartialEq for FosterByteString {
     fn eq(&self, other: &Self) -> bool {
         match self {
             Self::Owned(string) => match other {
                 Self::Owned(other_string) => string.eq(other_string),
-                Self::Fostered(other_string) => string.as_str().eq(*other_string),
+                Self::Fostered(other_string) => string.as_ref().eq(*other_string),
             },
 
             Self::Fostered(string) => match other {
-                Self::Owned(other_string) => (*string).eq(other_string.as_str()),
+                Self::Owned(other_string) => {
+                    let other_string: &str = &other_string;
+                    (*string).eq(other_string)
+                }
                 Self::Fostered(other_string) => string.eq(other_string),
             },
         }
     }
 }
 
-impl Eq for FosterByteStr {}
+impl Eq for FosterByteString {}
 
-impl PartialOrd for FosterByteStr {
+impl PartialOrd for FosterByteString {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
         match self {
             Self::Owned(string) => match other {
                 Self::Owned(other_string) => string.partial_cmp(other_string),
-                Self::Fostered(other_string) => string.as_str().partial_cmp(*other_string),
+                Self::Fostered(other_string) => (***string).partial_cmp(*other_string),
             },
 
             Self::Fostered(string) => match other {
-                Self::Owned(other_string) => (*string).partial_cmp(other_string.as_str()),
+                Self::Owned(other_string) => {
+                    let other_string: &str = &other_string;
+                    (*string).partial_cmp(other_string)
+                }
                 Self::Fostered(other_string) => string.partial_cmp(other_string),
             },
         }
     }
 }
 
-impl Ord for FosterByteStr {
+impl Ord for FosterByteString {
     fn cmp(&self, other: &Self) -> Ordering {
         match self {
             Self::Owned(string) => match other {
                 Self::Owned(other_string) => string.cmp(other_string),
-                Self::Fostered(other_string) => string.as_str().cmp(other_string),
+                Self::Fostered(other_string) => (***string).cmp(other_string),
             },
 
             Self::Fostered(string) => match other {
@@ -98,7 +104,7 @@ impl Ord for FosterByteStr {
     }
 }
 
-impl Hash for FosterByteStr {
+impl Hash for FosterByteString {
     fn hash<HasherT>(&self, state: &mut HasherT)
     where
         HasherT: Hasher,
@@ -110,7 +116,7 @@ impl Hash for FosterByteStr {
     }
 }
 
-impl fmt::Display for FosterByteStr {
+impl fmt::Display for FosterByteString {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Owned(string) => string.fmt(formatter),
@@ -119,29 +125,29 @@ impl fmt::Display for FosterByteStr {
     }
 }
 
-/// Delegates traits to a [FosterByteStr] newtype.
+/// Delegates traits to a [FosterByteString] newtype.
 ///
 /// Example:
 ///
 /// ```
 /// #[derive(Clone, Debug)]
-/// pub struct MyType(FosterByteStr);
+/// pub struct MyType(FosterByteString);
 ///
-/// delegate_newtype_of_foster_bytestr!(MyType);
+/// delegate_newtype_of_foster_byte_string!(MyType);
 /// ```
 ///
 #[macro_export]
-macro_rules! delegate_newtype_of_foster_bytestr {
+macro_rules! delegate_newtype_of_foster_byte_string {
     ( $type:ty ) => {
         impl $type {
             /// Constructor.
-            pub const fn new_owned(string: ::std::boxed::Box<::bytestr::ByteStr>) -> Self {
+            pub const fn new_owned(string: ::std::boxed::Box<::bytestring::ByteString>) -> Self {
                 Self(::kutil_std::foster::Foster::new_owned(string))
             }
 
             /// Constructor.
-            pub const fn new_static(string: &'static str) -> Self {
-                Self(::kutil_std::foster::Foster::new_static(string))
+            pub const fn new_fostered(string: &'static str) -> Self {
+                Self(::kutil_std::foster::Foster::new_fostered(string))
             }
         }
 
@@ -162,25 +168,25 @@ macro_rules! delegate_newtype_of_foster_bytestr {
             }
         }
 
-        impl From<::bytestr::ByteStr> for $type {
-            fn from(string: ::bytestr::ByteStr) -> Self {
+        impl ::std::convert::From<::bytestring::ByteString> for $type {
+            fn from(string: ::bytestring::ByteString) -> Self {
                 string.into()
             }
         }
 
-        impl From<String> for $type {
+        impl ::std::convert::From<String> for $type {
             fn from(string: ::std::string::String) -> Self {
                 string.into()
             }
         }
 
-        impl From<&str> for $type {
+        impl ::std::convert::From<&str> for $type {
             fn from(string: &str) -> Self {
                 Self(string.into())
             }
         }
 
-        impl AsRef<str> for $type {
+        impl ::std::convert::AsRef<str> for $type {
             fn as_ref(&self) -> &str {
                 self.0.as_ref()
             }
@@ -217,7 +223,7 @@ macro_rules! delegate_newtype_of_foster_bytestr {
 
         impl ::std::fmt::Display for $type {
             fn fmt(&self, formatter: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                self.0.fmt(formatter)
+                ::std::fmt::Display::fmt(&self.0, formatter)
             }
         }
     };

@@ -1,4 +1,7 @@
-use {kutil_cli::debug::*, std::collections::*};
+use {
+    kutil_cli::debug::*,
+    std::{collections::*, io},
+};
 
 // See: examples/debuggable.rs for how to manually implement Debuggable
 
@@ -17,7 +20,7 @@ struct User {
     #[debuggable(as(debuggable))]
     credentials: Credentials,
 
-    // "option" will show a bare "None" if the option is None
+    // "option" will show a "None" or "Some" symbol before the value
     // Also let's use std::fmt::Display here
     #[debuggable(option, as(display))]
     role: Option<String>,
@@ -26,14 +29,19 @@ struct User {
     #[debuggable(skip)]
     invisible: String,
 
-    // Automagically iterate items with "-" prefix
+    // Automagically iterate items with a pretty delimiter
     // (the annotations will be applied to the items)
     #[debuggable(iter(item), style(meta))]
     groups: Vec<String>,
 
-    // Iterate as key-value pairs with "?" and ":" prefixes
+    // "as(custom(...))" can be used for a custom stringifying function
+    // ("uppercase" is defined below)
+    #[debuggable(as(custom(uppercase)))]
+    special: String,
+
+    // Iterate as key-value pairs with pretty delimiters
     // Can use "key_as" and "key_style" for keys
-    #[debuggable(iter(kv), as(display), key_as(display), key_style(bare))]
+    #[debuggable(iter(kv), as(display), key_as(display), key_style(symbol))]
     meta: HashMap<String, String>,
 }
 
@@ -62,9 +70,14 @@ pub fn main() {
             meta: HashMap::from([("dangerous".into(), "very".into()), ("replace".into(), "asap".into())]),
         },
         groups: vec!["users".into(), "admins".into()],
+        special: "this is special".into(),
         meta: HashMap::from([("personality".into(), "awesome".into()), ("athletic".into(), "kinda".into())]),
         ..Default::default()
     };
 
     user.print_debug();
+}
+
+fn uppercase(special: &str) -> io::Result<String> {
+    Ok(special.to_uppercase())
 }

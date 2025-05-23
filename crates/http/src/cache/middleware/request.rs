@@ -11,17 +11,17 @@ use {http::*, kutil_transcoding::*};
 //
 
 /// Cacheable and/or encodable request.
-pub trait CacheableEncodableRequest {
+pub trait CacheableEncodableRequest<RequestBodyT> {
     /// May call `cacheable_by_request` hook.
     fn should_skip_cache<CacheT, CacheKeyT>(
         &self,
-        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        configuration: &MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
     ) -> bool;
 
     /// May call `cache_key` hook.
     fn cache_key_with_hook<CacheT, CacheKeyT>(
         &self,
-        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        configuration: &MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
     ) -> CacheKeyT
     where
         CacheKeyT: CacheKey;
@@ -30,10 +30,10 @@ pub trait CacheableEncodableRequest {
     fn select_encoding(&self, configuration: &MiddlewareEncodingConfiguration) -> Encoding;
 }
 
-impl<RequestBodyT> CacheableEncodableRequest for Request<RequestBodyT> {
+impl<RequestBodyT> CacheableEncodableRequest<RequestBodyT> for Request<RequestBodyT> {
     fn should_skip_cache<CacheT, CacheKeyT>(
         &self,
-        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        configuration: &MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
     ) -> bool {
         let mut skip_cache = if !configuration.cache.is_none() {
             let method = self.method();
@@ -62,7 +62,7 @@ impl<RequestBodyT> CacheableEncodableRequest for Request<RequestBodyT> {
 
     fn cache_key_with_hook<CacheT, CacheKeyT>(
         &self,
-        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        configuration: &MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
     ) -> CacheKeyT
     where
         CacheKeyT: CacheKey,
@@ -70,7 +70,7 @@ impl<RequestBodyT> CacheableEncodableRequest for Request<RequestBodyT> {
         let mut cache_key = self.cache_key();
 
         if let Some(cache_key_hook) = &configuration.cache_key {
-            cache_key_hook(CacheKeyHookContext::new(&mut cache_key, self.method(), self.uri(), self.headers()));
+            cache_key_hook(CacheKeyHookContext::new(&mut cache_key, self));
         }
 
         cache_key

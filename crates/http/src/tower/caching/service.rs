@@ -20,18 +20,17 @@ use {
 /// HTTP response caching service.
 ///
 /// See [CachingLayer](super::layer::CachingLayer).
-#[derive(Clone)]
-pub struct CachingService<InnerServiceT, CacheT, CacheKeyT = CommonCacheKey>
+pub struct CachingService<InnerServiceT, RequestBodyT, CacheT, CacheKeyT = CommonCacheKey>
 where
     CacheT: Cache<CacheKeyT>,
     CacheKeyT: CacheKey,
 {
     inner_service: InnerServiceT,
-    caching: MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+    caching: MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
     encoding: MiddlewareEncodingConfiguration,
 }
 
-impl<InnerServiceT, CacheT, CacheKeyT> CachingService<InnerServiceT, CacheT, CacheKeyT>
+impl<InnerServiceT, RequestBodyT, CacheT, CacheKeyT> CachingService<InnerServiceT, RequestBodyT, CacheT, CacheKeyT>
 where
     CacheT: Cache<CacheKeyT>,
     CacheKeyT: CacheKey,
@@ -39,7 +38,7 @@ where
     /// Constuctor.
     pub fn new(
         inner_service: InnerServiceT,
-        caching: MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        caching: MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
         encoding: MiddlewareEncodingConfiguration,
     ) -> Self {
         assert!(caching.inner.min_body_size <= caching.inner.max_body_size);
@@ -59,7 +58,7 @@ where
     }
 
     // Handle request.
-    async fn handle<RequestBodyT, ResponseBodyT>(
+    async fn handle<ResponseBodyT>(
         mut self,
         request: Request<RequestBodyT>,
     ) -> Result<Response<TranscodingBody<ResponseBodyT>>, InnerServiceT::Error>
@@ -164,8 +163,24 @@ where
     }
 }
 
+impl<InnerServiceT, RequestBodyT, CacheT, CacheKeyT> Clone
+    for CachingService<InnerServiceT, RequestBodyT, CacheT, CacheKeyT>
+where
+    InnerServiceT: Clone,
+    CacheT: Cache<CacheKeyT>,
+    CacheKeyT: CacheKey,
+{
+    fn clone(&self) -> Self {
+        Self {
+            inner_service: self.inner_service.clone(),
+            caching: self.caching.clone(),
+            encoding: self.encoding.clone(),
+        }
+    }
+}
+
 impl<InnerServiceT, RequestBodyT, ResponseBodyT, ErrorT, CacheT, CacheKeyT> Service<Request<RequestBodyT>>
-    for CachingService<InnerServiceT, CacheT, CacheKeyT>
+    for CachingService<InnerServiceT, RequestBodyT, CacheT, CacheKeyT>
 where
     InnerServiceT:
         'static + Service<Request<RequestBodyT>, Response = Response<ResponseBodyT>, Error = ErrorT> + Clone + Send,

@@ -5,7 +5,7 @@ use {anstream::ColorChoice, clap::*};
 //
 
 /// Colorization options for Clap.
-#[derive(Clone, Default, ValueEnum)]
+#[derive(Clone, Copy, Default, ValueEnum)]
 pub enum Colorize {
     /// Colorize if supported.
     #[default]
@@ -22,9 +22,9 @@ impl Colorize {
     /// Applies the colorization option globally.
     pub fn initialize(&self) {
         match self {
-            Colorize::True => {}
-            Colorize::False => ColorChoice::Never.write_global(),
-            Colorize::Force => ColorChoice::Always.write_global(),
+            Self::True => {}
+            Self::False => ColorChoice::Never.write_global(),
+            Self::Force => ColorChoice::Always.write_global(),
         }
     }
 }

@@ -1,7 +1,7 @@
 use super::{super::cache::*, preferences::*};
 
 use {
-    bytestr::*,
+    bytestring::*,
     kutil_std::string::*,
     std::{convert::*, fmt, str::*},
 };
@@ -14,7 +14,7 @@ use {
 #[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct ETag {
     /// Tag.
-    pub tag: ByteStr,
+    pub tag: ByteString,
 
     /// Weak.
     pub weak: bool,
@@ -22,7 +22,7 @@ pub struct ETag {
 
 impl ETag {
     /// Constructor.
-    pub fn new(tag: ByteStr, weak: bool) -> Self {
+    pub fn new(tag: ByteString, weak: bool) -> Self {
         Self { tag, weak }
     }
 

@@ -5,6 +5,7 @@ members = [
     "crates/http",
     "crates/io",
     "crates/std",
+    "crates/std-macros",
     "crates/transcoding",
 ]
 resolver = "3"
@@ -15,4 +16,5 @@ kutil-cli-macros = { path = "crates/cli-macros" }
 kutil-http = { path = "crates/http" }
 kutil-io = { path = "crates/io" }
 kutil-std = { path = "crates/std" }
+kutil-std-macros = { path = "crates/std-macros" }
 kutil-transcoding = { path = "crates/transcoding" }

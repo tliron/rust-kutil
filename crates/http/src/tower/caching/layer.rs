@@ -36,7 +36,7 @@ use {
 ///
 /// For encoding we support the web's common compression formats: Brotli, Deflate, GZip, and
 /// Zstandard. We select the best encoding according to our and the client's preferences (HTTP
-/// content negotiaton).
+/// content negotiation).
 ///
 /// The cache and cache key implementations are provided as generic type parameters. The
 /// [CommonCacheKey] implementation should suffice for common use cases.
@@ -126,7 +126,7 @@ use {
 ///    cache entries according to application events other than user requests. Example scenarios:
 ///
 ///    1. Inserting cache entries manually can be critical for avoiding "cold cache" performance
-///       degredation (as well as outright failure) for busy, resource-heavy servers. You might
+///       degradation (as well as outright failure) for busy, resource-heavy servers. You might
 ///       want to initialize your cache with popular entries before opening your server to
 ///       requests. If your cache is distributed it might also mean syncing the cache first.
 ///
@@ -261,17 +261,16 @@ use {
 ///
 ///    3) It's quite a waste of compute to decode and then reencode, which goes against the goals
 ///       of this middleware. (We do emit a warning in the logs.)
-#[derive(Clone)]
-pub struct CachingLayer<CacheT, CacheKeyT = CommonCacheKey>
+pub struct CachingLayer<RequestBodyT, CacheT, CacheKeyT = CommonCacheKey>
 where
     CacheT: Cache<CacheKeyT>,
     CacheKeyT: CacheKey,
 {
-    caching: MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+    caching: MiddlewareCachingConfiguration<RequestBodyT, CacheT, CacheKeyT>,
     encoding: MiddlewareEncodingConfiguration,
 }
 
-impl<CacheT, CacheKeyT> CachingLayer<CacheT, CacheKeyT>
+impl<RequestBodyT, CacheT, CacheKeyT> CachingLayer<RequestBodyT, CacheT, CacheKeyT>
 where
     CacheT: Cache<CacheKeyT>,
     CacheKeyT: CacheKey,
@@ -352,7 +351,10 @@ where
     }
 
     /// [None](Option::None) by default.
-    pub fn cache_key(mut self, cache_key: impl Fn(CacheKeyHookContext<CacheKeyT>) + 'static + Send + Sync) -> Self {
+    pub fn cache_key(
+        mut self,
+        cache_key: impl Fn(CacheKeyHookContext<CacheKeyT, RequestBodyT>) + 'static + Send + Sync,
+    ) -> Self {
         self.caching.cache_key = Some(Arc::new(Box::new(cache_key)));
         self
     }
@@ -461,12 +463,23 @@ where
     }
 }
 
-impl<InnerServiceT, CacheT, CacheKeyT> Layer<InnerServiceT> for CachingLayer<CacheT, CacheKeyT>
+impl<RequestBodyT, CacheT, CacheKeyT> Clone for CachingLayer<RequestBodyT, CacheT, CacheKeyT>
 where
     CacheT: Cache<CacheKeyT>,
     CacheKeyT: CacheKey,
 {
-    type Service = CachingService<InnerServiceT, CacheT, CacheKeyT>;
+    fn clone(&self) -> Self {
+        Self { caching: self.caching.clone(), encoding: self.encoding.clone() }
+    }
+}
+
+impl<InnerServiceT, RequestBodyT, CacheT, CacheKeyT> Layer<InnerServiceT>
+    for CachingLayer<RequestBodyT, CacheT, CacheKeyT>
+where
+    CacheT: Cache<CacheKeyT>,
+    CacheKeyT: CacheKey,
+{
+    type Service = CachingService<InnerServiceT, RequestBodyT, CacheT, CacheKeyT>;
 
     fn layer(&self, inner_service: InnerServiceT) -> Self::Service {
         CachingService::new(inner_service, self.caching.clone(), self.encoding.clone())

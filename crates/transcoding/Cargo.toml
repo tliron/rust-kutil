@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil-transcoding"
 description = "Transcoding utilities from Kutil"
-version = "0.0.2"
+version = "0.0.3"
 rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
@@ -17,7 +17,7 @@ categories = []                                    # https://crates.io/category_
 keywords = ["kutil", "transcoding", "compression"]
 
 [dependencies]
-async-compression = { version = "0.4.23", features = [
+async-compression = { version = "0.4.25", features = [
     "tokio",
     "brotli",
     "deflate",
@@ -25,10 +25,10 @@ async-compression = { version = "0.4.23", features = [
     "zstd",
 ] }
 bytes = "1.10.1"
-kutil-std = "=0.0.4"
+kutil-std = { version = "=0.0.5", features = ["derive"] }
 pin-project = "1.1.10"
 tracing = "0.1.41"
-tokio = { version = "1.45.0", features = ["io-util"] }
+tokio = { version = "1.45.1", features = ["io-util"] }
 
 # https://stackoverflow.com/a/61417700
 [package.metadata.docs.rs]

@@ -3,7 +3,7 @@ use super::super::{context::*, debuggable::*, format::*};
 use std::io::*;
 
 /// Debug into list item.
-pub const DEBUG_INTO_LIST_ITEM: &str = "•";
+pub const DEBUG_INTO_LIST_ITEM: &str = "⦁︎"; // U+2981
 
 /// Write an [Iterator] of [Debuggable] as a list.
 ///

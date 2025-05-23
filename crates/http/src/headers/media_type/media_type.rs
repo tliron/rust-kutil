@@ -14,10 +14,10 @@ use {
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct MediaType {
     /// Main segment.
-    main: MediaTypeSegment,
+    pub main: MediaTypeSegment,
 
     /// Subtype segment.
-    subtype: MediaTypeSegment,
+    pub subtype: MediaTypeSegment,
 }
 
 impl MediaType {
@@ -32,8 +32,8 @@ impl MediaType {
     }
 
     /// Constructor.
-    pub const fn new_static(main: &'static str, subtype: &'static str) -> Self {
-        Self::new(MediaTypeSegment::new_static(main), MediaTypeSegment::new_static(subtype))
+    pub const fn new_fostered(main: &'static str, subtype: &'static str) -> Self {
+        Self::new(MediaTypeSegment::new_fostered(main), MediaTypeSegment::new_fostered(subtype))
     }
 }
 

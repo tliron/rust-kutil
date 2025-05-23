@@ -9,10 +9,10 @@ pub const DEBUG_INTO_MAP_KEY: &str = "?";
 pub const DEBUG_INTO_MAP_VALUE: &str = ":";
 
 /// Debug into map entry.
-pub const DEBUG_INTO_MAP_ENTRY: &str = "⚬";
+pub const DEBUG_INTO_MAP_ENTRY: &str = "⚬"; // U+26AC
 
 /// Debug map entry separator.
-pub const DEBUG_MAP_ENTRY_SEPARATOR: &str = " →";
+pub const DEBUG_MAP_ENTRY_SEPARATOR: &str = " ⇨"; // U+21E8
 
 /// Write an [Iterator] of [Debuggable] as a map.
 ///

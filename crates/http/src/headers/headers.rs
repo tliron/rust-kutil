@@ -1,6 +1,9 @@
 use super::{bool::*, encoding::*, etag::*, into::*, language::*, media_type::*, preferences::*};
 
 use {
+    base64::{engine::general_purpose::*, *},
+    bytes::Bytes,
+    bytestring::*,
     http::header::*,
     httpdate::*,
     kutil_std::collections::*,
@@ -26,21 +29,34 @@ pub trait HeaderValues {
     /// Will skip over non-ASCII values.
     fn string_values(&self, name: HeaderName) -> Vec<&str>;
 
+    /// Parse a header value as an ASCII string.
+    ///
+    /// [None](Option::None) could mean that there is no such header *or* that it is not a valid
+    /// ASCII string.
+    ///
+    /// Unfortunately this is *not* zero-copy because [HeaderValue] does not give us access to its
+    /// inner [Bytes].
+    fn byte_string_value(&self, name: HeaderName) -> Option<ByteString>;
+
+    /// Parse all header values as ASCII strings.
+    ///
+    /// Will skip over non-ASCII values.
+    ///
+    /// Unfortunately this is *not* zero-copy because [HeaderValue] does not give us access to its
+    /// inner [Bytes].
+    fn byte_string_values(&self, name: HeaderName) -> Vec<ByteString>;
+
     /// Parse a header value as a boolean ("true" or "false") or return a default a value.
     fn bool_value(&self, name: HeaderName, default: bool) -> bool {
-        match self.string_value(name) {
-            Some(value) => {
-                if value.eq_ignore_ascii_case("true") {
-                    true
-                } else if value.eq_ignore_ascii_case("false") {
-                    false
-                } else {
-                    default
-                }
+        if let Some(value) = self.string_value(name) {
+            match value.to_lowercase().as_str() {
+                "true" => return true,
+                "false" => return false,
+                _ => {}
             }
-
-            None => default,
         }
+
+        default
     }
 
     /// Parse a header from its ASCII string value.
@@ -116,6 +132,30 @@ pub trait HeaderValues {
     ///
     /// Will fail if not an ASCII string.
     fn set_string_value(&mut self, name: HeaderName, value: &str) -> Result<(), InvalidHeaderValue>;
+
+    /// Set header string values.
+    ///
+    /// Invalid header names will be skipped.
+    ///
+    /// Makes sure to remove existing values first for each header.
+    ///
+    /// Will fail if a value is not an ASCII string.
+    fn set_string_values<IteratorT, NameT, ValueT>(
+        &mut self,
+        name_value_pairs: IteratorT,
+    ) -> Result<(), InvalidHeaderValue>
+    where
+        IteratorT: Iterator<Item = (NameT, ValueT)>,
+        NameT: AsRef<str>,
+        ValueT: AsRef<str>,
+    {
+        for (name, value) in name_value_pairs {
+            if let Ok(name) = HeaderName::from_lowercase(name.as_ref().to_lowercase().as_bytes()) {
+                self.set_string_value(name, value.as_ref())?;
+            }
+        }
+        Ok(())
+    }
 
     /// Set a boolean header value ("true" or "false").
     ///
@@ -193,6 +233,30 @@ pub trait HeaderValues {
         self.parse_value(IF_MATCH)
     }
 
+    /// Parse the [`Authorization`](AUTHORIZATION) request header value for the `Basic` scheme.
+    ///
+    /// Expects UTF-8 strings.
+    ///
+    /// Returns the username and password.
+    ///
+    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    fn authorization_basic(&self) -> Option<(String, String)> {
+        if let Some(authorization) = self.string_value(AUTHORIZATION) {
+            if authorization.starts_with("Basic ") {
+                let authorization = &authorization[6..];
+                if let Ok(authorization) = STANDARD.decode(authorization) {
+                    if let Ok(authorization) = str::from_utf8(&authorization) {
+                        if let Some((username, password)) = authorization.split_once(':') {
+                            return Some((username.into(), password.into()));
+                        }
+                    }
+                }
+            }
+        }
+
+        None
+    }
+
     // Response headers
 
     /// Parse the [`Content-Encoding`](CONTENT_ENCODING) response header value.
@@ -242,6 +306,28 @@ impl HeaderValues for HeaderMap {
 
     fn string_values(&self, name: HeaderName) -> Vec<&str> {
         self.get_all(name).iter().filter_map(|value| value.to_str().ok()).collect()
+    }
+
+    fn byte_string_value(&self, name: HeaderName) -> Option<ByteString> {
+        let bytes = Bytes::copy_from_slice(self.get(name)?.as_bytes());
+        match ByteString::try_from(bytes) {
+            Ok(value) => Some(value),
+
+            Err(error) => {
+                tracing::warn!("value is not ASCII: {}", error);
+                None
+            }
+        }
+    }
+
+    fn byte_string_values(&self, name: HeaderName) -> Vec<ByteString> {
+        self.get_all(name)
+            .iter()
+            .filter_map(|value| {
+                let bytes = Bytes::copy_from_slice(value.as_bytes());
+                ByteString::try_from(bytes).ok()
+            })
+            .collect()
     }
 
     fn set_value<ValueT>(&mut self, name: HeaderName, value: ValueT)

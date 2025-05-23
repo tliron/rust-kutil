@@ -14,7 +14,7 @@ pub trait JoinConjunction<'own> {
     fn join_conjunction(&'own self, conjunction: &str) -> String;
 }
 
-impl<'own, IterableT, ItemT> JoinConjunction<'own> for IterableT
+impl<'own, ItemT, IterableT> JoinConjunction<'own> for IterableT
 where
     ItemT: 'own + AsRef<str>,
     &'own IterableT: 'own + IntoIterator<Item = ItemT>,

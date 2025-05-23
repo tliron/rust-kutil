@@ -17,10 +17,10 @@ pub trait UpstreamResponse<ResponseBodyT> {
     ///
     /// If the response passes all our checks then we turn to the hook to give it one last chance
     /// to skip the cache.
-    fn should_skip_cache<CacheT, CacheKeyT>(
+    fn should_skip_cache<RequestBodyT, CacheT, CacheKeyT>(
         &self,
         uri: &Uri,
-        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT, RequestBodyT>,
     ) -> (bool, Option<usize>);
 
     /// Validate encoding.
@@ -39,10 +39,10 @@ pub trait UpstreamResponse<ResponseBodyT> {
 }
 
 impl<ResponseBodyT> UpstreamResponse<ResponseBodyT> for Response<ResponseBodyT> {
-    fn should_skip_cache<CacheT, CacheKeyT>(
+    fn should_skip_cache<RequestBodyT, CacheT, CacheKeyT>(
         &self,
         uri: &Uri,
-        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT>,
+        configuration: &MiddlewareCachingConfiguration<CacheT, CacheKeyT, RequestBodyT>,
     ) -> (bool, Option<usize>) {
         let headers = self.headers();
         let status = self.status();

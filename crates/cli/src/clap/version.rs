@@ -5,7 +5,7 @@ use clap::*;
 //
 
 /// Clap command to print version.
-#[derive(Args)]
+#[derive(Args, Clone, Debug)]
 pub struct Version;
 
 impl Version {

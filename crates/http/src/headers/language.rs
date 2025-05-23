@@ -19,9 +19,9 @@ use {
 /// Note that even though ISO recommends cased representations, they are case-insensitive in HTTP.
 /// Thus we convert all subtags to lowercase for comparison efficiency.
 #[derive(Clone, Debug)]
-pub struct Language(pub FosterByteStrVector);
+pub struct Language(pub FosterByteStringVector);
 
-delegate_newtype_of_foster_bytestr_vector!(Language);
+delegate_newtype_of_foster_byte_string_vector!(Language);
 
 impl Language {
     /// Parse list.

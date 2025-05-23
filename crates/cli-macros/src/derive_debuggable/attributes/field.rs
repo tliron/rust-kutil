@@ -52,6 +52,7 @@ pub enum As {
     DebugAlt,
     Display,
     Debuggable,
+    Custom(syn::Expr),
 }
 
 impl As {
@@ -85,6 +86,14 @@ impl As {
             As::Debuggable => quote! {
                 value.write_debug_for(writer, child_context)?;
             },
+
+            As::Custom(custom) => {
+                let value = style.style(quote! { (#custom)(value)? });
+                quote! {
+                    child_context.separate(writer)?;
+                    ::std::write!(writer, "{}", #value)?;
+                }
+            }
         }
     }
 }
@@ -97,7 +106,7 @@ impl As {
 pub enum Style {
     #[default]
     None,
-    Bare,
+    Symbol,
     Number,
     String,
     Name,
@@ -112,7 +121,7 @@ impl Style {
     pub fn style(&self, value: TokenStream) -> TokenStream {
         match self {
             Style::None => value,
-            Style::Bare => quote! { context.theme.bare(#value) },
+            Style::Symbol => quote! { context.theme.symbol(#value) },
             Style::Number => quote! { context.theme.number(#value) },
             Style::String => quote! { context.theme.string(#value) },
             Style::Name => quote! { context.theme.name(#value) },

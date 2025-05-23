@@ -43,7 +43,7 @@ impl<OwnedT, FosteredT> Foster<OwnedT, FosteredT> {
     }
 
     /// Constructor.
-    pub const fn new_static(value: FosteredT) -> Self {
+    pub const fn new_fostered(value: FosteredT) -> Self {
         Self::Fostered(value)
     }
 

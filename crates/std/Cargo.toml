@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil-std"
 description = "std utilities from Kutil"
-version = "0.0.4"
+version = "0.0.5"
 rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
@@ -18,12 +18,17 @@ keywords = ["kutil", "std"]
 
 [dependencies]
 ahash = { optional = true, version = "0.8.12" }
-bytestr = { optional = true, version = "0.1.0" }
+bytestring = { optional = true, version = "1.4.0" }
+kutil-std-macros = { optional = true, version = "=0.0.1" }
 papaya = { optional = true, version = "0.2.1" }
 
 [features]
+## Enable `ByteString` implementations.
+byte_string = ["dep:bytestring"]
+## Enable fast collections.
 fast_collections = ["dep:ahash", "dep:papaya"]
-bytestr = ["dep:bytestr"]
+## Include procedural macros for `derive`.
+derive = ["dep:kutil-std-macros"]
 
 # https://stackoverflow.com/a/61417700
 [package.metadata.docs.rs]

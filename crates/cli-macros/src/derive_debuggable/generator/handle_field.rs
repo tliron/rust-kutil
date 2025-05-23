@@ -122,12 +122,14 @@ impl Generator {
             true => quote! {
                 match &self.#field_name {
                     Some(value) => {
+                        context.separate(writer)?;
+                        context.theme.write_symbol(writer, "Some")?;
                         #write
                     },
 
                     None => {
                         context.separate(writer)?;
-                        context.theme.write_bare(writer, "None")?;
+                        context.theme.write_symbol(writer, "None")?;
                     },
                 }
             },

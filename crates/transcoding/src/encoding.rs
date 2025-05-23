@@ -1,4 +1,4 @@
-use std::fmt;
+use kutil_std::*;
 
 /// Encodings in order from cheapest to decode to most expensive.
 pub const ENCODINGS_BY_DECODING_COST: &[Encoding] =
@@ -9,7 +9,7 @@ pub const ENCODINGS_BY_DECODING_COST: &[Encoding] =
 //
 
 /// HTTP encoding.
-#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Display, Eq, Hash, PartialEq)]
 pub enum Encoding {
     /// Identity.
     #[default]
@@ -26,10 +26,4 @@ pub enum Encoding {
 
     /// Zstandard.
     Zstandard,
-}
-
-impl fmt::Display for Encoding {
-    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        write!(formatter, "{:?}", self)
-    }
 }

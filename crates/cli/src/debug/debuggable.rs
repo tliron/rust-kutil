@@ -2,6 +2,8 @@ use super::{context::*, format::*, theme::*};
 
 use std::io::*;
 
+const TO_STRING_BUFFER_CAPACITY: usize = 1024;
+
 //
 // Debuggable
 //
@@ -63,7 +65,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn print_debug_with_format(&self, format: DebugFormat) {
-        self.write_debug_with_format(&mut anstream::stdout(), format).unwrap();
+        self.write_debug_with_format(&mut anstream::stdout(), format).expect("write_debug_with_format");
     }
 
     /// Print the debug representation to [anstream::stdout] with the default theme and a final newline.
@@ -77,7 +79,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn print_debug_plain_with_format(&self, format: DebugFormat) {
-        self.write_debug_plain_with_format(&mut stdout(), format).unwrap();
+        self.write_debug_plain_with_format(&mut stdout(), format).expect("write_debug_plain_with_format");
     }
 
     /// Print the debug representation to [stdout] with the plain theme and a final newline.
@@ -93,7 +95,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn eprint_debug_with_format(&self, format: DebugFormat) {
-        self.write_debug_with_format(&mut anstream::stdout(), format).unwrap();
+        self.write_debug_with_format(&mut anstream::stdout(), format).expect("write_debug_with_format");
     }
 
     /// Print the debug representation to [anstream::stderr] with the default theme and a final newline.
@@ -107,7 +109,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn eprint_debug_plain_with_format(&self, format: DebugFormat) {
-        self.write_debug_plain_with_format(&mut stdout(), format).unwrap();
+        self.write_debug_plain_with_format(&mut stdout(), format).expect("write_debug_plain_with_format");
     }
 
     /// Print the debug representation to [stderr] with the plain theme and a final newline.
@@ -119,12 +121,9 @@ pub trait Debuggable {
 
     /// Capture [write_debug_for](Debuggable::write_debug_for) into a string.
     fn to_debug_string_with_format(&self, theme: &Theme, format: DebugFormat) -> Result<String> {
-        let mut writer = BufWriter::new(Vec::new());
+        let mut writer = Vec::with_capacity(TO_STRING_BUFFER_CAPACITY);
         self.write_debug_for(&mut writer, &DebugContext::new(theme).with_format(format))?;
-        match String::from_utf8(writer.into_inner().unwrap().into()) {
-            Ok(string) => Ok(string),
-            Err(error) => Err(Error::other(format!("{}", error))),
-        }
+        String::from_utf8(writer.into()).map_err(Error::other)
     }
 
     /// Capture [write_debug_for](Debuggable::write_debug_for) into a string.

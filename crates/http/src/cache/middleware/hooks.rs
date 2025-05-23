@@ -1,4 +1,4 @@
-use {http::*, kutil_transcoding::*, std::sync::*};
+use {http::request::*, http::*, kutil_transcoding::*, std::sync::*};
 
 /// Hook to check if a request or a response is cacheable.
 pub type CacheableHook = Arc<Box<dyn Fn(CacheableHookContext) -> bool + Send + Sync>>;
@@ -7,13 +7,15 @@ pub type CacheableHook = Arc<Box<dyn Fn(CacheableHookContext) -> bool + Send + S
 pub type EncodableHook = Arc<Box<dyn Fn(EncodableHookContext) -> bool + Send + Sync>>;
 
 /// Hook to update a request's cache key.
-pub type CacheKeyHook<CacheKeyT> = Arc<Box<dyn Fn(CacheKeyHookContext<CacheKeyT>) + Send + Sync>>;
+pub type CacheKeyHook<CacheKeyT, RequestBodyT> =
+    Arc<Box<dyn Fn(CacheKeyHookContext<CacheKeyT, RequestBodyT>) + Send + Sync>>;
 
 //
 // CacheableHookContext
 //
 
 /// Context for [CacheableHook].
+#[derive(Clone, Debug)]
 pub struct CacheableHookContext<'own> {
     /// URI.
     pub uri: &'own Uri,
@@ -34,6 +36,7 @@ impl<'own> CacheableHookContext<'own> {
 //
 
 /// Context for [EncodableHook].
+#[derive(Clone, Debug)]
 pub struct EncodableHookContext<'own> {
     /// Encoding.
     pub encoding: &'own Encoding,
@@ -57,23 +60,18 @@ impl<'own> EncodableHookContext<'own> {
 //
 
 /// Context for [CacheKeyHook].
-pub struct CacheKeyHookContext<'own, CacheKeyT> {
+#[derive(Debug)]
+pub struct CacheKeyHookContext<'own, CacheKeyT, RequestBodyT> {
     /// Cache key.
     pub cache_key: &'own mut CacheKeyT,
 
-    /// Method.
-    pub method: &'own Method,
-
-    /// URI.
-    pub uri: &'own Uri,
-
-    /// Headers.
-    pub headers: &'own HeaderMap,
+    /// Request.
+    pub request: &'own Request<RequestBodyT>,
 }
 
-impl<'own, CacheKeyT> CacheKeyHookContext<'own, CacheKeyT> {
+impl<'own, CacheKeyT, RequestBodyT> CacheKeyHookContext<'own, CacheKeyT, RequestBodyT> {
     /// Constructor.
-    pub fn new(cache_key: &'own mut CacheKeyT, method: &'own Method, uri: &'own Uri, headers: &'own HeaderMap) -> Self {
-        Self { cache_key, method, uri, headers }
+    pub fn new(cache_key: &'own mut CacheKeyT, request: &'own Request<RequestBodyT>) -> Self {
+        Self { cache_key, request }
     }
 }
