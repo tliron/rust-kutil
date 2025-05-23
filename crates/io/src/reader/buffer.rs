@@ -9,15 +9,15 @@ use std::{io::*, sync::*};
 /// It's simply a buffer wrapped in an [Arc] and that can match the requirements of
 /// [Cursor].
 #[derive(Clone, Debug)]
-pub struct ReadableBuffer(Arc<Vec<u8>>);
+pub struct ReadableBuffer(Arc<[u8]>);
 
 /// [ReadableBuffer] reader.
 pub type ReadableBufferReader = Cursor<ReadableBuffer>;
 
 impl ReadableBuffer {
     /// Constructor.
-    pub fn new(buffer: Vec<u8>) -> Self {
-        Self(Arc::new(buffer))
+    pub fn new(buffer: &[u8]) -> Self {
+        Self(Arc::from(buffer))
     }
 
     /// Reader.

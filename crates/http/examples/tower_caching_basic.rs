@@ -31,7 +31,7 @@ use {
 const CACHE_SIZE: u64 = 1024 * 1024; // 1 MiB
 
 // Keeping it very short for testing purposes
-const TIME_TO_IDLE: Duration = Duration::from_secs(10);
+const CACHE_DURATION: Duration = Duration::from_secs(10);
 
 const MAX_BODY_SIZE: usize = 1024; // 1 KiB
 
@@ -45,7 +45,7 @@ async fn main() {
         .name("http")
         .for_http_response()
         .max_capacity(CACHE_SIZE)
-        .time_to_idle(TIME_TO_IDLE)
+        .time_to_live(CACHE_DURATION)
         .eviction_listener(|key, _value, cause| {
             tracing::debug!("evict ({:?}): {}", cause, key);
         })
@@ -57,12 +57,17 @@ async fn main() {
 
     let router = Router::new()
         .route("/", get(("Hello, world!\n",)))
-        .layer(CachingLayer::new().cache(cache.clone()).max_cacheable_body_size(MAX_BODY_SIZE).keep_identity_encoding(false))
+        .layer(
+            CachingLayer::new()
+                .cache(cache.clone())
+                .max_cacheable_body_size(MAX_BODY_SIZE)
+                .keep_identity_encoding(false),
+        )
         .layer(TraceLayer::new_for_http());
 
-    let listener = TcpListener::bind("[::]:8080").await.unwrap();
+    let listener = TcpListener::bind("[::]:8080").await.expect("bind");
     // If IPv6 is disabled on your machine (for shame!):
-    // let listener = TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    // let listener = TcpListener::bind("0.0.0.0:8080").await.expect("bind");
     tracing::info!("bound to: {:?}", listener.local_addr());
-    serve(listener, router).await.unwrap();
+    serve(listener, router).await.expect("serve");
 }

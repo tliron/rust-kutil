@@ -6,6 +6,6 @@ HERE=$(dirname "$(readlink --canonicalize "$BASH_SOURCE")")
 
 cd "$ROOT"
 
-for E in $(cargo run --example 2>&1 | grep --extended-regexp '^    ' | sort); do
-	cargo run --example "$E" --features=derive
+for E in $(cargo run --example --package kutil-cli 2>&1 | grep --extended-regexp '^    ' | sort); do
+	cargo run --example "$E" --package kutil-cli --features=derive
 done

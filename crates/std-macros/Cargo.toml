@@ -1,0 +1,31 @@
+[package]
+edition = "2024"
+
+name = "kutil-std-macros"
+description = "Procedural macros for kutil-std"
+version = "0.0.1"
+rust-version = "1.85"
+
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/tliron/rust-kutil"
+documentation = "https://docs.rs/kutil-std"
+authors = ["Tal Liron"]
+
+readme = "../../README.md"
+
+categories = []             # https://crates.io/category_slugs
+keywords = ["kutil", "std"]
+
+[lib]
+proc-macro = true
+
+[dependencies]
+deluxe = "0.5.0"
+proc-macro2 = "1.0.95"
+quote = "1.0.40"
+syn = "2.0.103"
+
+# https://stackoverflow.com/a/61417700
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]

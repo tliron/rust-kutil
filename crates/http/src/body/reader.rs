@@ -85,51 +85,48 @@ where
         }
 
         Poll::Ready(match ready!(self.body.as_mut().poll_frame(context)) {
-            Some(result) => match result {
-                Ok(frame) => {
-                    match frame.into_data() {
-                        Ok(mut data) => {
-                            // Copy as much as we can from the data
-                            let size = min(buffer.remaining_mut(), data.remaining());
+            Some(result) => {
+                let frame = result.map_err(io::Error::other)?;
+                match frame.into_data() {
+                    Ok(mut data) => {
+                        // Copy as much as we can from the data
+                        let size = min(buffer.remaining_mut(), data.remaining());
 
-                            if size != 0 {
-                                let bytes = data.copy_to_bytes(size);
-                                buffer.put(bytes);
-                            }
-
-                            // Store leftover data in the remainder
-                            if data.has_remaining() {
-                                self.validate_remainder_capacity();
-                                self.remainder.put(data);
-                            }
-
-                            Ok(())
+                        if size != 0 {
+                            let bytes = data.copy_to_bytes(size);
+                            buffer.put(bytes);
                         }
 
-                        // Note that this is not actually an error
-                        Err(frame) => {
-                            match frame.into_trailers() {
-                                Ok(trailers) => {
-                                    tracing::debug!("trailers frame");
-                                    self.trailers.push(trailers);
+                        // Store leftover data in the remainder
+                        if data.has_remaining() {
+                            self.validate_remainder_capacity();
+                            self.remainder.put(data);
+                        }
 
-                                    // Note: There really shouldn't be more than one trailers frame,
-                                    // but Body::poll_frame doesn't explicitly disallow it so we
-                                    // make sure to collect them all into a vector
-                                }
+                        Ok(())
+                    }
 
-                                Err(_frame) => {
-                                    tracing::warn!("frame is not data and not trailers");
-                                }
+                    // Note that this is not actually an error
+                    Err(frame) => {
+                        match frame.into_trailers() {
+                            Ok(trailers) => {
+                                tracing::debug!("trailers frame");
+                                self.trailers.push(trailers);
+
+                                // Note: There really shouldn't be more than one trailers frame,
+                                // but Body::poll_frame doesn't explicitly disallow it so we
+                                // make sure to collect them all into a vector
                             }
 
-                            Ok(())
+                            Err(_frame) => {
+                                tracing::warn!("frame is not data and not trailers");
+                            }
                         }
+
+                        Ok(())
                     }
                 }
-
-                Err(error) => Err(io::Error::other(error)),
-            },
+            }
 
             None => Ok(()),
         })

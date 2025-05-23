@@ -83,7 +83,7 @@ where
 
         match self.stream.next() {
             Some(result) => {
-                let mut bytes = result.map_err(|error| io::Error::other(error))?;
+                let mut bytes = result.map_err(io::Error::other)?;
 
                 // Copy as much as we can from the bytes
                 let size = min(buffer_remaining, bytes.remaining());

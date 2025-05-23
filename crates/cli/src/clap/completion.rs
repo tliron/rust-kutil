@@ -5,7 +5,7 @@ use {clap::*, clap_complete_command::*, std::io};
 //
 
 /// Clap command to generate shell auto-completion scripts.
-#[derive(Args)]
+#[derive(Args, Clone, Debug)]
 pub struct Completion {
     /// shell
     #[arg(value_enum)]

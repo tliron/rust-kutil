@@ -1,5 +1,6 @@
 use super::{
     super::{super::cache::*, preferences::*},
+    media_type::*,
     segment::*,
 };
 
@@ -19,10 +20,10 @@ use {
 #[derive(Clone, Debug, Eq, Hash, PartialEq)]
 pub struct MediaTypeSelector {
     /// Main segment.
-    main: Selector<MediaTypeSegment>,
+    pub main: Selector<MediaTypeSegment>,
 
     /// Subtype segment.
-    subtype: Selector<MediaTypeSegment>,
+    pub subtype: Selector<MediaTypeSegment>,
 }
 
 impl MediaTypeSelector {
@@ -40,10 +41,10 @@ impl MediaTypeSelector {
     }
 
     /// Constructor.
-    pub const fn new_static(main: &'static str, subtype: &'static str) -> Self {
+    pub const fn new_fostered(main: &'static str, subtype: &'static str) -> Self {
         Self::new(
-            Selector::Specific(MediaTypeSegment::new_static(main)),
-            Selector::Specific(MediaTypeSegment::new_static(subtype)),
+            Selector::Specific(MediaTypeSegment::new_fostered(main)),
+            Selector::Specific(MediaTypeSegment::new_fostered(subtype)),
         )
     }
 
@@ -95,6 +96,18 @@ impl CacheWeight for MediaTypeSelector {
     fn cache_weight(&self) -> usize {
         const SELF_SIZE: usize = size_of::<MediaTypeSelector>();
         SELF_SIZE + self.main.cache_weight() + self.subtype.cache_weight()
+    }
+}
+
+impl From<MediaType> for MediaTypeSelector {
+    fn from(media_type: MediaType) -> Self {
+        Self::new(media_type.main.into(), media_type.subtype.into())
+    }
+}
+
+impl PartialEq<MediaType> for MediaTypeSelector {
+    fn eq(&self, other: &MediaType) -> bool {
+        (self.main == other.main) && (self.subtype == other.subtype)
     }
 }
 
