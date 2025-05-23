@@ -1,3 +1,5 @@
+// https://stackoverflow.com/a/61417700
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(missing_docs)]
 
 /*!
@@ -11,9 +13,6 @@ For more information and usage examples see the
 [home page](https://github.com/tliron/rust-kutil).
 */
 
-/// Foster utilities.
-pub mod foster;
-
 /// Borrow utilities.
 pub mod borrow;
 
@@ -23,14 +22,27 @@ pub mod collections;
 /// Error utilities.
 pub mod error;
 
+/// Foster utilities.
+pub mod foster;
+
+/// Filesystem utilities.
+pub mod fs;
+
 /// Future utilities.
 pub mod future;
 
 /// Iteration utilities.
 pub mod iter;
 
+/// Metric utilities.
+pub mod metric;
+
 /// String utilities.
 pub mod string;
 
 /// Synchronization utilities.
 pub mod sync;
+
+#[cfg(feature = "derive")]
+#[allow(unused_imports)]
+pub use kutil_std_macros::*;

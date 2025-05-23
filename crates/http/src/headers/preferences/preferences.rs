@@ -31,14 +31,14 @@ impl<SelectionT> Preferences<SelectionT> {
             .filter_map(move |format| {
                 let mut split = format.splitn(2, ';');
 
-                let format = (split.next().unwrap().trim()).parse().ok()?;
+                let selector = (split.next().expect("next").trim()).parse().ok()?;
 
                 let weight = match split.next() {
                     Some(weight) => Weight::parse(weight.trim())?,
                     None => Weight::MAX,
                 };
 
-                Some(Preference::new(format, weight))
+                Some(Preference::new(selector, weight))
             })
             .collect();
 

@@ -36,14 +36,11 @@ impl<SelectionT> Selector<SelectionT> {
         SelectionT: Eq,
     {
         match self {
-            Self::Any => {
-                let selections: Vec<_> = candidates.iter().collect();
-                selections
-            }
+            Self::Any => candidates.iter().collect(),
 
-            Self::Specific(selector) => {
-                if candidates.contains(&selector) {
-                    vec![selector]
+            Self::Specific(selection) => {
+                if candidates.contains(&selection) {
+                    vec![selection]
                 } else {
                     Vec::new()
                 }
@@ -64,8 +61,8 @@ where
 {
     fn cache_weight(&self) -> usize {
         let mut size = size_of::<Self>();
-        if let Self::Specific(selector) = self {
-            size += selector.cache_weight();
+        if let Self::Specific(selection) = self {
+            size += selection.cache_weight();
         }
         size
     }
@@ -78,10 +75,22 @@ where
     fn eq(&self, other: &Self) -> bool {
         match self {
             Self::Any => matches!(other, Self::Any),
-            Self::Specific(selector) => match other {
+            Self::Specific(selection) => match other {
                 Self::Any => false,
-                Self::Specific(other_selector) => selector.eq(other_selector),
+                Self::Specific(other_selection) => selection.eq(other_selection),
             },
+        }
+    }
+}
+
+impl<SelectionT> PartialEq<SelectionT> for Selector<SelectionT>
+where
+    SelectionT: PartialEq,
+{
+    fn eq(&self, other: &SelectionT) -> bool {
+        match self {
+            Self::Any => false,
+            Self::Specific(selection) => selection.eq(other),
         }
     }
 }
@@ -99,11 +108,17 @@ where
                 state.write_u8(0);
             }
 
-            Self::Specific(selector) => {
+            Self::Specific(selection) => {
                 state.write_u8(1);
-                selector.hash(state);
+                selection.hash(state);
             }
         }
+    }
+}
+
+impl<SelectionT> From<SelectionT> for Selector<SelectionT> {
+    fn from(selection: SelectionT) -> Self {
+        Self::Specific(selection)
     }
 }
 

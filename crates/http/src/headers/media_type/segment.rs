@@ -11,9 +11,9 @@ use {
 
 /// [MediaType](super::media_type::MediaType) segment.
 #[derive(Clone, Debug)]
-pub struct MediaTypeSegment(pub FosterByteStr);
+pub struct MediaTypeSegment(pub FosterByteString);
 
-delegate_newtype_of_foster_bytestr!(MediaTypeSegment);
+delegate_newtype_of_foster_byte_string!(MediaTypeSegment);
 
 impl CacheWeight for MediaTypeSegment {
     fn cache_weight(&self) -> usize {

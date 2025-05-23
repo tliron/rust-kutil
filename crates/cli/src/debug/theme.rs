@@ -10,6 +10,7 @@ use {
 /// Collection of theme for printing text.
 ///
 /// See [Debuggable](super::debuggable::Debuggable).
+#[derive(Clone, Debug)]
 pub struct Theme {
     /// For bare words: true, false, null, etc.
     pub bare_style: Style,

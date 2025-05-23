@@ -63,7 +63,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn print_debug_with_format(&self, format: DebugFormat) {
-        self.write_debug_with_format(&mut anstream::stdout(), format).unwrap();
+        self.write_debug_with_format(&mut anstream::stdout(), format).expect("write_debug_with_format");
     }
 
     /// Print the debug representation to [anstream::stdout] with the default theme and a final newline.
@@ -77,7 +77,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn print_debug_plain_with_format(&self, format: DebugFormat) {
-        self.write_debug_plain_with_format(&mut stdout(), format).unwrap();
+        self.write_debug_plain_with_format(&mut stdout(), format).expect("write_debug_plain_with_format");
     }
 
     /// Print the debug representation to [stdout] with the plain theme and a final newline.
@@ -93,7 +93,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn eprint_debug_with_format(&self, format: DebugFormat) {
-        self.write_debug_with_format(&mut anstream::stdout(), format).unwrap();
+        self.write_debug_with_format(&mut anstream::stdout(), format).expect("write_debug_with_format");
     }
 
     /// Print the debug representation to [anstream::stderr] with the default theme and a final newline.
@@ -107,7 +107,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn eprint_debug_plain_with_format(&self, format: DebugFormat) {
-        self.write_debug_plain_with_format(&mut stdout(), format).unwrap();
+        self.write_debug_plain_with_format(&mut stdout(), format).expect("write_debug_plain_with_format");
     }
 
     /// Print the debug representation to [stderr] with the plain theme and a final newline.
@@ -121,7 +121,7 @@ pub trait Debuggable {
     fn to_debug_string_with_format(&self, theme: &Theme, format: DebugFormat) -> Result<String> {
         let mut writer = BufWriter::new(Vec::new());
         self.write_debug_for(&mut writer, &DebugContext::new(theme).with_format(format))?;
-        match String::from_utf8(writer.into_inner().unwrap().into()) {
+        match String::from_utf8(writer.into_inner().expect("from_utf8").into()) {
             Ok(string) => Ok(string),
             Err(error) => Err(Error::other(format!("{}", error))),
         }

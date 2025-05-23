@@ -1,10 +1,22 @@
 use super::into::*;
 
-use {http::*, httpdate::*, std::time::*};
+use {
+    http::*,
+    httpdate::*,
+    std::{fs::*, io, path::*, time::*},
+};
 
 /// Current time as [HttpDate].
 pub fn now() -> HttpDate {
     HttpDate::from(SystemTime::now())
+}
+
+/// File modification timestamp as HttpDate.
+pub fn file_modified<PathT>(path: PathT) -> io::Result<HttpDate>
+where
+    PathT: AsRef<Path>,
+{
+    metadata(path)?.modified().map(|system_time| system_time.into())
 }
 
 /// Whether we have been modified since a reference date.
