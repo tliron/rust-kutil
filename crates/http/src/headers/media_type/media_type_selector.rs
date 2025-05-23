@@ -40,10 +40,10 @@ impl MediaTypeSelector {
     }
 
     /// Constructor.
-    pub const fn new_static(main: &'static str, subtype: &'static str) -> Self {
+    pub const fn new_fostered(main: &'static str, subtype: &'static str) -> Self {
         Self::new(
-            Selector::Specific(MediaTypeSegment::new_static(main)),
-            Selector::Specific(MediaTypeSegment::new_static(subtype)),
+            Selector::Specific(MediaTypeSegment::new_fostered(main)),
+            Selector::Specific(MediaTypeSegment::new_fostered(subtype)),
         )
     }
 

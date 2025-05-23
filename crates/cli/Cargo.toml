@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil-cli"
 description = "CLI utilities from Kutil"
-version = "0.0.6"
+version = "0.0.7"
 rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
@@ -31,9 +31,10 @@ tracing-subscriber = { version = "0.3.19", features = [
 ] }
 
 [dev-dependencies]
-kutil-std = "=0.0.4"
+kutil-std = "=0.0.5"
 
 [features]
+## Enable macros.
 derive = ["dep:kutil-cli-macros"]
 
 [[example]]

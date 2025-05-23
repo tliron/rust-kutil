@@ -1,3 +1,5 @@
+// https://stackoverflow.com/a/61417700
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
 #![warn(missing_docs)]
 
 /*!
@@ -15,6 +17,7 @@ mod body;
 mod errors;
 mod headers;
 mod pieces;
+mod uri;
 
 /// Cache utilities.
 pub mod cache;
@@ -27,4 +30,4 @@ pub mod tower;
 pub mod transcoding;
 
 #[allow(unused_imports)]
-pub use {body::*, errors::*, headers::*, pieces::*};
+pub use {body::*, errors::*, headers::*, pieces::*, uri::*};

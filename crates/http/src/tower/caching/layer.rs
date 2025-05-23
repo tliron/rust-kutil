@@ -36,7 +36,7 @@ use {
 ///
 /// For encoding we support the web's common compression formats: Brotli, Deflate, GZip, and
 /// Zstandard. We select the best encoding according to our and the client's preferences (HTTP
-/// content negotiaton).
+/// content negotiation).
 ///
 /// The cache and cache key implementations are provided as generic type parameters. The
 /// [CommonCacheKey] implementation should suffice for common use cases.
@@ -126,7 +126,7 @@ use {
 ///    cache entries according to application events other than user requests. Example scenarios:
 ///
 ///    1. Inserting cache entries manually can be critical for avoiding "cold cache" performance
-///       degredation (as well as outright failure) for busy, resource-heavy servers. You might
+///       degradation (as well as outright failure) for busy, resource-heavy servers. You might
 ///       want to initialize your cache with popular entries before opening your server to
 ///       requests. If your cache is distributed it might also mean syncing the cache first.
 ///

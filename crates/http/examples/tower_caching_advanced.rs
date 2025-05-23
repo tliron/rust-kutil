@@ -52,18 +52,18 @@ const TIME_TO_IDLE: Duration = Duration::from_secs(10);
 const MAX_BODY_SIZE: usize = 200;
 
 // Some language constants
-const ENGLISH: Language = Language::new_static(&["en"]);
-const ENGLISH_USA: Language = Language::new_static(&["en", "us"]);
-const CHINESE: Language = Language::new_static(&["zh"]);
-const CHINESE_TRADITIONAL: Language = Language::new_static(&["zh", "tw"]);
-const CHINESE_SIMPLIFIED: Language = Language::new_static(&["zh", "cn"]);
+const ENGLISH: Language = Language::new_fostered(&["en"]);
+const ENGLISH_USA: Language = Language::new_fostered(&["en", "us"]);
+const CHINESE: Language = Language::new_fostered(&["zh"]);
+const CHINESE_TRADITIONAL: Language = Language::new_fostered(&["zh", "tw"]);
+const CHINESE_SIMPLIFIED: Language = Language::new_fostered(&["zh", "cn"]);
 
-// Already-comprssed media types
+// Already-compressed media types
 const COMPRESSED_MEDIA_TYPES: &[MediaType] = &[
-    MediaType::new_static("image", "png"),
-    MediaType::new_static("image", "jpeg"),
-    MediaType::new_static("audio", "mpeg"),
-    MediaType::new_static("video", "mpeg"),
+    MediaType::new_fostered("image", "png"),
+    MediaType::new_fostered("image", "jpeg"),
+    MediaType::new_fostered("audio", "mpeg"),
+    MediaType::new_fostered("video", "mpeg"),
 ];
 
 #[main]

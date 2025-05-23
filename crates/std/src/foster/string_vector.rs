@@ -106,7 +106,7 @@ impl<'own> IntoIterator for &'own FosterStringVector {
     fn into_iter(self) -> Self::IntoIter {
         match self {
             Foster::Owned(strings) => Foster::new_owned(ConvertingIterator::new(strings.iter(), |string| &string)),
-            Foster::Fostered(strings) => Foster::new_static(ConvertingIterator::new(strings.iter(), |string| string)),
+            Foster::Fostered(strings) => Foster::new_fostered(ConvertingIterator::new(strings.iter(), |string| string)),
         }
     }
 }
@@ -132,8 +132,8 @@ macro_rules! delegate_newtype_of_foster_string_vector {
             }
 
             /// Constructor.
-            pub const fn new_static(strings: &'static [&'static str]) -> Self {
-                Self(::kutil_std::foster::Foster::new_static(strings))
+            pub const fn new_fostered(strings: &'static [&'static str]) -> Self {
+                Self(::kutil_std::foster::Foster::new_fostered(strings))
             }
         }
 
@@ -152,7 +152,7 @@ macro_rules! delegate_newtype_of_foster_string_vector {
             }
         }
 
-        impl From<::std::vec::Vec<::std::string::String>> for $type {
+        impl ::std::convert::From<::std::vec::Vec<::std::string::String>> for $type {
             fn from(strings: Vec<::std::string::String>) -> Self {
                 strings.into()
             }

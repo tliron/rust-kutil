@@ -1,6 +1,8 @@
 use super::{bool::*, encoding::*, etag::*, into::*, language::*, media_type::*, preferences::*};
 
 use {
+    bytes::Bytes,
+    bytestr::*,
     http::header::*,
     httpdate::*,
     kutil_std::collections::*,
@@ -25,6 +27,23 @@ pub trait HeaderValues {
     ///
     /// Will skip over non-ASCII values.
     fn string_values(&self, name: HeaderName) -> Vec<&str>;
+
+    /// Parse a header value as an ASCII string.
+    ///
+    /// [None](Option::None) could mean that there is no such header *or* that it is not a valid
+    /// ASCII string.
+    ///
+    /// Unfortunately this is *not* zero-copy because [HeaderValue] does not give us access to its
+    /// inner [Bytes].
+    fn bytestr_value(&self, name: HeaderName) -> Option<ByteStr>;
+
+    /// Parse all header values as ASCII strings.
+    ///
+    /// Will skip over non-ASCII values.
+    ///
+    /// Unfortunately this is *not* zero-copy because [HeaderValue] does not give us access to its
+    /// inner [Bytes].
+    fn bytestr_values(&self, name: HeaderName) -> Vec<ByteStr>;
 
     /// Parse a header value as a boolean ("true" or "false") or return a default a value.
     fn bool_value(&self, name: HeaderName, default: bool) -> bool {
@@ -242,6 +261,28 @@ impl HeaderValues for HeaderMap {
 
     fn string_values(&self, name: HeaderName) -> Vec<&str> {
         self.get_all(name).iter().filter_map(|value| value.to_str().ok()).collect()
+    }
+
+    fn bytestr_value(&self, name: HeaderName) -> Option<ByteStr> {
+        let bytes = Bytes::copy_from_slice(self.get(name)?.as_bytes());
+        match ByteStr::from_utf8(bytes) {
+            Ok(value) => Some(value),
+
+            Err(error) => {
+                tracing::warn!("value is not ASCII: {}", error);
+                None
+            }
+        }
+    }
+
+    fn bytestr_values(&self, name: HeaderName) -> Vec<ByteStr> {
+        self.get_all(name)
+            .iter()
+            .filter_map(|value| {
+                let bytes = Bytes::copy_from_slice(value.as_bytes());
+                ByteStr::from_utf8(bytes).ok()
+            })
+            .collect()
     }
 
     fn set_value<ValueT>(&mut self, name: HeaderName, value: ValueT)
