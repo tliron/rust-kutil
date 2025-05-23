@@ -52,6 +52,7 @@ pub enum As {
     DebugAlt,
     Display,
     Debuggable,
+    Custom(syn::Expr),
 }
 
 impl As {
@@ -85,6 +86,14 @@ impl As {
             As::Debuggable => quote! {
                 value.write_debug_for(writer, child_context)?;
             },
+
+            As::Custom(custom) => {
+                let value = style.style(quote! { (#custom)(value)? });
+                quote! {
+                    child_context.separate(writer)?;
+                    ::std::write!(writer, "{}", #value)?;
+                }
+            }
         }
     }
 }

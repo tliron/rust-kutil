@@ -77,6 +77,114 @@ impl PartialEq for FosterStringVector {
 
 impl Eq for FosterStringVector {}
 
+impl PartialOrd for FosterStringVector {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        // See: core::slice::cmp::SlicePartialOrd
+
+        match self {
+            Self::Owned(strings) => match other {
+                Self::Owned(other_strings) => strings.partial_cmp(other_strings),
+
+                Self::Fostered(other_strings) => {
+                    let strings_length = strings.len();
+                    let other_strings_length = other_strings.len();
+                    let length = min(strings_length, other_strings_length);
+
+                    // enable compiler bound check elimination
+                    let strings_bounded = &strings[..length];
+                    let other_strings_bounded = &other_strings[..length];
+
+                    for index in 0..length {
+                        match strings_bounded[index].as_str().partial_cmp(other_strings_bounded[index]) {
+                            Some(Ordering::Equal) => (),
+                            not_equal => return not_equal,
+                        }
+                    }
+
+                    strings_length.partial_cmp(&other_strings_length)
+                }
+            },
+
+            Self::Fostered(strings) => match other {
+                Self::Owned(other_strings) => {
+                    let strings_length = strings.len();
+                    let other_strings_length = other_strings.len();
+                    let length = min(strings_length, other_strings_length);
+
+                    // enable compiler bound check elimination
+                    let strings_bounded = &strings[..length];
+                    let other_strings_bounded = &other_strings[..length];
+
+                    for index in 0..length {
+                        match strings_bounded[index].partial_cmp(other_strings_bounded[index].as_str()) {
+                            Some(Ordering::Equal) => (),
+                            not_equal => return not_equal,
+                        }
+                    }
+
+                    strings_length.partial_cmp(&other_strings_length)
+                }
+
+                Self::Fostered(other_strings) => strings.partial_cmp(other_strings),
+            },
+        }
+    }
+}
+
+impl Ord for FosterStringVector {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // See: core::slice::cmp::SliceOrd
+
+        match self {
+            Self::Owned(strings) => match other {
+                Self::Owned(other_strings) => strings.cmp(other_strings),
+
+                Self::Fostered(other_strings) => {
+                    let strings_length = strings.len();
+                    let other_strings_length = other_strings.len();
+                    let length = min(strings_length, other_strings_length);
+
+                    // enable compiler bound check elimination
+                    let strings_bounded = &strings[..length];
+                    let other_strings_bounded = &other_strings[..length];
+
+                    for index in 0..length {
+                        match strings_bounded[index].as_str().cmp(other_strings_bounded[index]) {
+                            Ordering::Equal => (),
+                            not_equal => return not_equal,
+                        }
+                    }
+
+                    strings_length.cmp(&other_strings_length)
+                }
+            },
+
+            Self::Fostered(strings) => match other {
+                Self::Owned(other_strings) => {
+                    let strings_length = strings.len();
+                    let other_strings_length = other_strings.len();
+                    let length = min(strings_length, other_strings_length);
+
+                    // enable compiler bound check elimination
+                    let strings_bounded = &strings[..length];
+                    let other_strings_bounded = &other_strings[..length];
+
+                    for index in 0..length {
+                        match strings_bounded[index].cmp(other_strings_bounded[index].as_str()) {
+                            Ordering::Equal => (),
+                            not_equal => return not_equal,
+                        }
+                    }
+
+                    strings_length.cmp(&other_strings_length)
+                }
+
+                Self::Fostered(other_strings) => strings.cmp(other_strings),
+            },
+        }
+    }
+}
+
 impl Hash for FosterStringVector {
     fn hash<HasherT>(&self, state: &mut HasherT)
     where
@@ -106,7 +214,7 @@ impl<'own> IntoIterator for &'own FosterStringVector {
     fn into_iter(self) -> Self::IntoIter {
         match self {
             Foster::Owned(strings) => Foster::new_owned(ConvertingIterator::new(strings.iter(), |string| &string)),
-            Foster::Fostered(strings) => Foster::new_static(ConvertingIterator::new(strings.iter(), |string| string)),
+            Foster::Fostered(strings) => Foster::new_fostered(ConvertingIterator::new(strings.iter(), |string| string)),
         }
     }
 }
@@ -132,8 +240,8 @@ macro_rules! delegate_newtype_of_foster_string_vector {
             }
 
             /// Constructor.
-            pub const fn new_static(strings: &'static [&'static str]) -> Self {
-                Self(::kutil_std::foster::Foster::new_static(strings))
+            pub const fn new_fostered(strings: &'static [&'static str]) -> Self {
+                Self(::kutil_std::foster::Foster::new_fostered(strings))
             }
         }
 
@@ -152,7 +260,7 @@ macro_rules! delegate_newtype_of_foster_string_vector {
             }
         }
 
-        impl From<::std::vec::Vec<::std::string::String>> for $type {
+        impl ::std::convert::From<::std::vec::Vec<::std::string::String>> for $type {
             fn from(strings: Vec<::std::string::String>) -> Self {
                 strings.into()
             }
@@ -165,6 +273,18 @@ macro_rules! delegate_newtype_of_foster_string_vector {
         }
 
         impl ::std::cmp::Eq for $type {}
+
+        impl ::std::cmp::PartialOrd for $type {
+            fn partial_cmp(&self, other: &Self) -> ::std::option::Option<::std::cmp::Ordering> {
+                self.0.partial_cmp(&other.0)
+            }
+        }
+
+        impl ::std::cmp::Ord for $type {
+            fn cmp(&self, other: &Self) -> ::std::cmp::Ordering {
+                self.0.cmp(&other.0)
+            }
+        }
 
         impl ::std::hash::Hash for $type {
             fn hash<HasherT>(&self, state: &mut HasherT)

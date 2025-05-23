@@ -57,12 +57,17 @@ async fn main() {
 
     let router = Router::new()
         .route("/", get(("Hello, world!\n",)))
-        .layer(CachingLayer::new().cache(cache.clone()).max_cacheable_body_size(MAX_BODY_SIZE).keep_identity_encoding(false))
+        .layer(
+            CachingLayer::new()
+                .cache(cache.clone())
+                .max_cacheable_body_size(MAX_BODY_SIZE)
+                .keep_identity_encoding(false),
+        )
         .layer(TraceLayer::new_for_http());
 
-    let listener = TcpListener::bind("[::]:8080").await.unwrap();
+    let listener = TcpListener::bind("[::]:8080").await.expect("bind");
     // If IPv6 is disabled on your machine (for shame!):
-    // let listener = TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    // let listener = TcpListener::bind("0.0.0.0:8080").await.expect("bind");
     tracing::info!("bound to: {:?}", listener.local_addr());
-    serve(listener, router).await.unwrap();
+    serve(listener, router).await.expect("serve");
 }

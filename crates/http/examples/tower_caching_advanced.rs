@@ -37,7 +37,7 @@ use {
 //
 //   curl --silent http://localhost:8080/png | icat --width 10 -
 //
-//   curl --verbose --request POST --verbose http://localhost:8080/reset
+//   curl --verbose --request POST http://localhost:8080/reset
 //
 // A browser would be easier for testing client-side caching on http://localhost:8080/clientcache
 // Make sure to turn on the browser's developer tools with F12
@@ -52,18 +52,18 @@ const TIME_TO_IDLE: Duration = Duration::from_secs(10);
 const MAX_BODY_SIZE: usize = 200;
 
 // Some language constants
-const ENGLISH: Language = Language::new_static(&["en"]);
-const ENGLISH_USA: Language = Language::new_static(&["en", "us"]);
-const CHINESE: Language = Language::new_static(&["zh"]);
-const CHINESE_TRADITIONAL: Language = Language::new_static(&["zh", "tw"]);
-const CHINESE_SIMPLIFIED: Language = Language::new_static(&["zh", "cn"]);
+const ENGLISH: Language = Language::new_fostered(&["en"]);
+const ENGLISH_USA: Language = Language::new_fostered(&["en", "us"]);
+const CHINESE: Language = Language::new_fostered(&["zh"]);
+const CHINESE_TRADITIONAL: Language = Language::new_fostered(&["zh", "tw"]);
+const CHINESE_SIMPLIFIED: Language = Language::new_fostered(&["zh", "cn"]);
 
-// Already-comprssed media types
+// Already-compressed media types
 const COMPRESSED_MEDIA_TYPES: &[MediaType] = &[
-    MediaType::new_static("image", "png"),
-    MediaType::new_static("image", "jpeg"),
-    MediaType::new_static("audio", "mpeg"),
-    MediaType::new_static("video", "mpeg"),
+    MediaType::new_fostered("image", "png"),
+    MediaType::new_fostered("image", "jpeg"),
+    MediaType::new_fostered("audio", "mpeg"),
+    MediaType::new_fostered("video", "mpeg"),
 ];
 
 #[main]
@@ -132,7 +132,7 @@ async fn main() {
                 }
             }),
         )
-        .route("/reset", post(reset_cache::<MokaCacheImplementation<_>, _>))
+        .route("/reset", post(reset_cache_handler::<MokaCacheImplementation<_>, _>))
         .with_state(cache.clone()) // for "/reset"
         .layer(
             CachingLayer::new()
@@ -142,7 +142,7 @@ async fn main() {
                     // HTTP content negotiation for "/language"
                     if context.uri.path() == "/language" {
                         let language = context.headers.accept_language().best_or_first(LANGUAGES).clone();
-                        context.cache_key.languages = Some(vec![language]);
+                        context.cache_key.languages = Some([language].into());
                     }
                 })
                 .cache_duration(|context| {
@@ -168,9 +168,9 @@ async fn main() {
         )
         .layer(TraceLayer::new_for_http());
 
-    let listener = TcpListener::bind("[::]:8080").await.unwrap();
+    let listener = TcpListener::bind("[::]:8080").await.expect("bind");
     // If IPv6 is disabled on your machine (for shame!):
-    // let listener = TcpListener::bind("0.0.0.0:8080").await.unwrap();
+    // let listener = TcpListener::bind("0.0.0.0:8080").await.expect("bind");
     tracing::info!("bound to: {:?}", listener.local_addr());
-    serve(listener, router).await.unwrap();
+    serve(listener, router).await.expect("serve");
 }
