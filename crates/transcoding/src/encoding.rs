@@ -9,7 +9,7 @@ pub const ENCODINGS_BY_DECODING_COST: &[Encoding] =
 //
 
 /// HTTP encoding.
-#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub enum Encoding {
     /// Identity.
     #[default]

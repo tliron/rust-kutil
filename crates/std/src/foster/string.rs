@@ -107,8 +107,8 @@ impl Hash for FosterString {
 impl fmt::Display for FosterString {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Owned(string) => string.fmt(formatter),
-            Self::Fostered(string) => string.fmt(formatter),
+            Self::Owned(string) => fmt::Display::fmt(string, formatter),
+            Self::Fostered(string) => fmt::Display::fmt(string, formatter),
         }
     }
 }
@@ -134,8 +134,8 @@ macro_rules! delegate_newtype_of_foster_string {
             }
 
             /// Constructor.
-            pub const fn new_static(string: &'static str) -> Self {
-                Self(::kutil_std::foster::Foster::new_static(string))
+            pub const fn new_fostered(string: &'static str) -> Self {
+                Self(::kutil_std::foster::Foster::new_fostered(string))
             }
         }
 
@@ -154,19 +154,19 @@ macro_rules! delegate_newtype_of_foster_string {
             }
         }
 
-        impl From<::std::string::String> for $type {
+        impl ::std::convert::From<::std::string::String> for $type {
             fn from(string: ::std::string::String) -> Self {
                 string.into()
             }
         }
 
-        impl From<&str> for $type {
+        impl ::std::convert::From<&str> for $type {
             fn from(string: &str) -> Self {
                 Self(string.into())
             }
         }
 
-        impl AsRef<str> for $type {
+        impl ::std::convert::AsRef<str> for $type {
             fn as_ref(&self) -> &str {
                 self.0.as_ref()
             }
@@ -203,7 +203,7 @@ macro_rules! delegate_newtype_of_foster_string {
 
         impl ::std::fmt::Display for $type {
             fn fmt(&self, formatter: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
-                self.0.fmt(formatter)
+                ::std::fmt::Display::fmt(&self.0, formatter)
             }
         }
     };

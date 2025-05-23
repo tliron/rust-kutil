@@ -21,31 +21,26 @@ pub struct CommonCacheKey {
     /// Method.
     pub method: Method,
 
-    /// Optional authority.
-    ///
-    /// This will often *not* be provided by upstream requests.
-    pub authority: Option<Authority>,
-
-    /// Optional scheme.
-    ///
-    /// This will often *not* be provided by upstream requests.
-    pub scheme: Option<Scheme>,
-
-    /// Optional host.
-    ///
-    /// This will often *not* be provided by upstream requests.
-    pub host: Option<ByteStr>,
-
-    /// Optional port.
-    ///
-    /// This will often *not* be provided by upstream requests.
-    pub port: Option<u16>,
-
     /// Optional path.
     pub path: Option<ByteStr>,
 
     /// Optional query (sorted by key).
     pub query: Option<BTreeMap<ByteStr, ByteStr>>,
+
+    /// Optional scheme.
+    ///
+    /// Not set by default but reserved for custom use.
+    pub scheme: Option<Scheme>,
+
+    /// Optional host.
+    ///
+    /// Not set by default but reserved for custom use.
+    pub host: Option<ByteStr>,
+
+    /// Optional port.
+    ///
+    /// Not set by default but reserved for custom use.
+    pub port: Option<u16>,
 
     /// Optional media type.
     ///
@@ -55,7 +50,7 @@ pub struct CommonCacheKey {
     /// Optional languages (sorted).
     ///
     /// Not set by default but reserved for custom use.
-    pub languages: Option<Vec<Language>>,
+    pub languages: Option<BTreeSet<Language>>,
 
     /// Optional extensions (sorted by key).
     ///
@@ -67,17 +62,16 @@ impl CommonCacheKey {
     /// Constructor.
     pub fn new(
         method: Method,
-        scheme: Option<Scheme>,
-        authority: Option<Authority>,
-        host: Option<ByteStr>,
-        port: Option<u16>,
         path: Option<ByteStr>,
         query: Option<BTreeMap<ByteStr, ByteStr>>,
+        scheme: Option<Scheme>,
+        host: Option<ByteStr>,
+        port: Option<u16>,
         media_type: Option<MediaType>,
-        languages: Option<Vec<Language>>,
+        languages: Option<BTreeSet<Language>>,
         extensions: Option<BTreeMap<Bytes, Bytes>>,
     ) -> Self {
-        Self { method, scheme, authority, host, port, path, query, media_type, languages, extensions }
+        Self { method, scheme, host, port, path, query, media_type, languages, extensions }
     }
 }
 
@@ -94,18 +88,7 @@ impl CacheKey for CommonCacheKey {
             None => (None, None),
         };
 
-        Self::new(
-            method.clone(),
-            uri.scheme().cloned(),
-            uri.authority().cloned(),
-            uri.host().map(|host| host.into()),
-            uri.port_u16(),
-            path,
-            query,
-            None,
-            None,
-            None,
-        )
+        Self::new(method.clone(), path, query, None, None, None, None, None, None)
     }
 }
 
@@ -114,10 +97,6 @@ impl CacheWeight for CommonCacheKey {
         const SELF_SIZE: usize = size_of::<CommonCacheKey>();
 
         let mut size = SELF_SIZE;
-
-        if let Some(authority) = &self.authority {
-            size += authority.as_str().len();
-        }
 
         if let Some(host) = &self.host {
             size += host.len();
@@ -156,7 +135,6 @@ impl CacheWeight for CommonCacheKey {
 impl fmt::Display for CommonCacheKey {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         let scheme = self.scheme.as_ref().map(|scheme| scheme.as_str()).unwrap_or_default();
-        let authority = self.authority.as_ref().map(|authority| authority.as_str()).unwrap_or_default();
         let host = self.host.as_ref().map(|host| host.as_str()).unwrap_or_default();
         let port = self.port.map(|port| port.to_string()).unwrap_or_default();
         let path = self.path.as_ref().map(|path| path.as_str()).unwrap_or_default();
@@ -205,8 +183,8 @@ impl fmt::Display for CommonCacheKey {
 
         write!(
             formatter,
-            "{}|{}|{}|{}|{}|{}|{}|{}|{}|{}",
-            self.method, scheme, authority, host, port, path, query, media_type, languages, extensions
+            "{}|{}|{}|{}|{}|{}|{}|{}|{}",
+            self.method, scheme, host, port, path, query, media_type, languages, extensions
         )
     }
 }

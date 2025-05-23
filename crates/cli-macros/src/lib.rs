@@ -1,3 +1,18 @@
+// https://stackoverflow.com/a/61417700
+#![cfg_attr(docsrs, feature(doc_auto_cfg))]
+#![warn(missing_docs)]
+
+/*!
+Various Rust utilities for CLI programs.
+
+Part of the Kutil family of Rust utility libraries.
+
+The word "kutil" means "do-it-yourselfer" in Czech.
+
+For more information and usage examples see the
+[home page](https://github.com/tliron/rust-kutil).
+*/
+
 mod derive_debuggable;
 
 // See: https://petanode.com/posts/rust-proc-macro/

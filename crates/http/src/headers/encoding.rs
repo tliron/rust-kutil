@@ -19,7 +19,7 @@ impl IntoHeaderValue for Encoding {
 //
 
 /// [Encoding] header value.
-#[derive(Clone, Debug, Default, Eq, Hash, PartialEq)]
+#[derive(Clone, Copy, Debug, Default, Eq, Hash, PartialEq)]
 pub enum EncodingHeaderValue {
     /// Identity.
     #[default]
@@ -62,15 +62,21 @@ impl Into<Encoding> for EncodingHeaderValue {
     }
 }
 
-impl Into<HeaderValue> for EncodingHeaderValue {
-    fn into(self) -> HeaderValue {
-        HeaderValue::from_static(match self {
+impl Into<&'static str> for EncodingHeaderValue {
+    fn into(self) -> &'static str {
+        match self {
             Self::Identity => "identity",
             Self::Brotli => "br",
             Self::Deflate => "deflate",
             Self::GZip => "gzip",
             Self::Zstandard => "zstd",
-        })
+        }
+    }
+}
+
+impl Into<HeaderValue> for EncodingHeaderValue {
+    fn into(self) -> HeaderValue {
+        HeaderValue::from_static(self.into())
     }
 }
 
@@ -78,18 +84,13 @@ impl FromStr for EncodingHeaderValue {
     type Err = ParseError;
 
     fn from_str(representation: &str) -> Result<Self, Self::Err> {
-        if representation.eq_ignore_ascii_case("identity") {
-            Ok(Self::Identity)
-        } else if representation.eq_ignore_ascii_case("br") {
-            Ok(Self::Brotli)
-        } else if representation.eq_ignore_ascii_case("deflate") {
-            Ok(Self::Deflate)
-        } else if representation.eq_ignore_ascii_case("gzip") {
-            Ok(Self::GZip)
-        } else if representation.eq_ignore_ascii_case("zstd") {
-            Ok(Self::Zstandard)
-        } else {
-            Err(format!("unsupported: {}", representation).into())
+        match representation.to_lowercase().as_str() {
+            "identity" => Ok(Self::Identity),
+            "br" => Ok(Self::Brotli),
+            "deflate" => Ok(Self::Deflate),
+            "gzip" => Ok(Self::GZip),
+            "zstd" => Ok(Self::Zstandard),
+            _ => Err(format!("unsupported: {}", representation).into()),
         }
     }
 }

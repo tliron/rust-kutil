@@ -5,7 +5,7 @@ use std::{error, fmt};
 //
 
 /// Information on how to exit a program.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Exit {
     /// Exit code.
     pub code: u8,
