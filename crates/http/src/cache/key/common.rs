@@ -27,7 +27,7 @@ pub struct CommonCacheKey {
     pub path: Option<ByteString>,
 
     /// Optional query (sorted by key).
-    pub query: Option<BTreeMap<ByteString, ByteString>>,
+    pub query: Option<QueryMap>,
 
     /// Optional scheme.
     ///
@@ -65,7 +65,7 @@ impl CommonCacheKey {
     pub fn new(
         method: Method,
         path: Option<ByteString>,
-        query: Option<BTreeMap<ByteString, ByteString>>,
+        query: Option<QueryMap>,
         scheme: Option<Scheme>,
         host: Option<ByteString>,
         port: Option<u16>,
@@ -140,11 +140,13 @@ impl fmt::Display for CommonCacheKey {
             .as_ref()
             .map(|parameter| {
                 let mut string = String::new();
-                for (k, v) in parameter {
-                    if !string.is_empty() {
-                        string += "&"
+                for (key, values) in parameter {
+                    for value in values {
+                        if !string.is_empty() {
+                            string += "&"
+                        }
+                        string += &format!("{}={}", key, value);
                     }
-                    string += &format!("{}={}", k, v);
                 }
                 string
             })
@@ -166,12 +168,12 @@ impl fmt::Display for CommonCacheKey {
             .as_ref()
             .map(|extension| {
                 let mut string = String::new();
-                for (k, v) in extension {
+                for (key, value) in extension {
                     if !string.is_empty() {
                         string += "&"
                     }
                     // We only display the length
-                    string += &format!("{}={}", k.len(), v.len());
+                    string += &format!("{}={}", key.len(), value.len());
                 }
                 string
             })

@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil-http"
 description = "HTTP utilities from Kutil"
-version = "0.0.4"
+version = "0.0.5"
 rust-version = "1.86"
 
 license = "MIT OR Apache-2.0"
