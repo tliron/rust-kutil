@@ -25,12 +25,11 @@ where
 ///
 /// If there is not enough information we will assume that we have been modified and return true.
 pub fn modified_since(modified_date: Option<HttpDate>, reference_date: Option<HttpDate>) -> bool {
-    if let Some(last_modified) = modified_date {
-        if let Some(reference_date) = reference_date {
-            if last_modified <= reference_date {
-                return false;
-            }
-        }
+    if let Some(last_modified) = modified_date
+        && let Some(reference_date) = reference_date
+        && last_modified <= reference_date
+    {
+        return false;
     }
 
     true

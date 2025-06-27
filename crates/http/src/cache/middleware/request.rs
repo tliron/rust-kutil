@@ -48,13 +48,12 @@ impl<RequestBodyT> CacheableEncodableRequest<RequestBodyT> for Request<RequestBo
             true
         };
 
-        if !skip_cache {
-            if let Some(cacheable) = &configuration.cacheable_by_request {
-                if !cacheable(CacheableHookContext::new(self.uri(), self.headers())) {
-                    tracing::debug!("skip (cacheable_by_request=false)");
-                    skip_cache = true;
-                }
-            }
+        if !skip_cache
+            && let Some(cacheable) = &configuration.cacheable_by_request
+            && !cacheable(CacheableHookContext::new(self.uri(), self.headers()))
+        {
+            tracing::debug!("skip (cacheable_by_request=false)");
+            skip_cache = true;
         }
 
         skip_cache
@@ -89,13 +88,12 @@ impl<RequestBodyT> CacheableEncodableRequest<RequestBodyT> for Request<RequestBo
             None => return Encoding::Identity,
         };
 
-        if encoding != Encoding::Identity {
-            if let Some(encodable) = &configuration.encodable_by_request {
-                if !encodable(EncodableHookContext::new(&encoding, self.uri(), self.headers())) {
-                    tracing::debug!("not encoding to {} (encodable_by_request=false)", encoding);
-                    return Encoding::Identity;
-                }
-            }
+        if encoding != Encoding::Identity
+            && let Some(encodable) = &configuration.encodable_by_request
+            && !encodable(EncodableHookContext::new(&encoding, self.uri(), self.headers()))
+        {
+            tracing::debug!("not encoding to {} (encodable_by_request=false)", encoding);
+            return Encoding::Identity;
         }
 
         encoding

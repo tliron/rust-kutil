@@ -3,8 +3,8 @@ edition = "2024"
 
 name = "kutil-std"
 description = "std utilities from Kutil"
-version = "0.0.5"
-rust-version = "1.86"
+version = "0.0.6"
+rust-version = "1.88"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -20,7 +20,7 @@ keywords = ["kutil", "std"]
 ahash = { optional = true, version = "0.8.12" }
 bytestring = { optional = true, version = "1.4.0" }
 kutil-std-macros = { optional = true, version = "=0.0.1" }
-papaya = { optional = true, version = "0.2.1" }
+papaya = { optional = true, version = "0.2.2" }
 
 [features]
 ## Enable `ByteString` implementations.

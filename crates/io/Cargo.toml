@@ -3,8 +3,8 @@ edition = "2024"
 
 name = "kutil-io"
 description = "I/O utilities from Kutil"
-version = "0.0.4"
-rust-version = "1.86"
+version = "0.0.5"
+rust-version = "1.88"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -19,9 +19,10 @@ keywords = ["kutil", "io"]
 [dependencies]
 bytes = "1.10.1"
 futures = "0.3.31"
-kutil-std = "=0.0.5"
+kutil-std = "=0.0.6"
 netdev = "0.35.2"
 tokio = { version = "1.45.1", features = ["rt", "io-util"] }
+utf8-chars =  "3.0.5"
 
 [features]
 default = ["blocking", "async"]

@@ -24,8 +24,8 @@ pub fn write_debug_as_map<'own, KeyT, ValueT, IteratorT, WriteT>(
     context: &DebugContext,
 ) -> Result<()>
 where
-    KeyT: Debuggable + 'own,
-    ValueT: Debuggable + 'own,
+    KeyT: 'own + Debuggable,
+    ValueT: 'own + Debuggable,
     IteratorT: Iterator<Item = (&'own KeyT, &'own ValueT)>,
     WriteT: Write,
 {

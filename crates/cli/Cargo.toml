@@ -3,8 +3,8 @@ edition = "2024"
 
 name = "kutil-cli"
 description = "CLI utilities from Kutil"
-version = "0.0.8"
-rust-version = "1.86"
+version = "0.0.9"
+rust-version = "1.88"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -22,7 +22,7 @@ anstyle = "1.0.11"
 clap = { version = "4.5.40", features = ["derive"] }
 clap_complete_command = "0.6.1"
 kutil-cli-macros = { optional = true, version = "=0.0.5" }
-owo-colors = "4.2.1"
+owo-colors = "4.2.2"
 time = { version = "0.3.41", features = ["macros"] }
 tracing = "0.1.41"
 tracing-journald = "0.3.1"
@@ -32,7 +32,7 @@ tracing-subscriber = { version = "0.3.19", features = [
 ] }
 
 [dev-dependencies]
-kutil-std = "=0.0.5"
+kutil-std = "=0.0.6"
 
 [features]
 ## Include procedural macros for `derive`.

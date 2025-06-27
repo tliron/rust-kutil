@@ -126,11 +126,11 @@ where
 
         let fulfilled_size = bytes.len();
 
-        if let Some(declared_size) = declared_size {
-            if declared_size != fulfilled_size {
-                // The declared size is wrong, but that's not in itself an error
-                tracing::warn!("declared size is {} but actual body size is {}", declared_size, fulfilled_size);
-            }
+        if let Some(declared_size) = declared_size
+            && declared_size != fulfilled_size
+        {
+            // The declared size is wrong, but that's not in itself an error
+            tracing::warn!("declared size is {} but actual body size is {}", declared_size, fulfilled_size);
         }
 
         if fulfilled_size < min_size {

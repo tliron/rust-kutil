@@ -241,16 +241,15 @@ pub trait HeaderValues {
     ///
     /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
     fn authorization_basic(&self) -> Option<(String, String)> {
-        if let Some(authorization) = self.string_value(AUTHORIZATION) {
-            if authorization.starts_with("Basic ") {
-                let authorization = &authorization[6..];
-                if let Ok(authorization) = STANDARD.decode(authorization) {
-                    if let Ok(authorization) = str::from_utf8(&authorization) {
-                        if let Some((username, password)) = authorization.split_once(':') {
-                            return Some((username.into(), password.into()));
-                        }
-                    }
-                }
+        if let Some(authorization) = self.string_value(AUTHORIZATION)
+            && authorization.starts_with("Basic ")
+        {
+            let authorization = &authorization[6..];
+            if let Ok(authorization) = STANDARD.decode(authorization)
+                && let Ok(authorization) = str::from_utf8(&authorization)
+                && let Some((username, password)) = authorization.split_once(':')
+            {
+                return Some((username.into(), password.into()));
             }
         }
 

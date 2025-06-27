@@ -3,8 +3,8 @@ edition = "2024"
 
 name = "kutil-http"
 description = "HTTP utilities from Kutil"
-version = "0.0.5"
-rust-version = "1.86"
+version = "0.0.6"
+rust-version = "1.88"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -28,13 +28,13 @@ duration-str = "0.17.0"
 http = "1.3.1"
 http-body = "1.0.1"
 httpdate = "1.0.3"
-kutil-std = { version = "=0.0.5", features = [
+kutil-std = { version = "=0.0.6", features = [
     "byte_string",
     "derive",
     "fast_collections",
 ] }
-kutil-io = { version = "=0.0.4", features = ["async"] }
-kutil-transcoding = "=0.0.3"
+kutil-io = { version = "=0.0.5", features = ["async"] }
+kutil-transcoding = "=0.0.4"
 moka = { optional = true, version = "0.12.10", features = ["future"] }
 pin-project = "1.1.10"
 rustls = { optional = true, version = "0.23.28" }

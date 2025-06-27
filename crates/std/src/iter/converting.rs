@@ -6,12 +6,12 @@
 #[derive(Clone, Debug)]
 pub struct ConvertingIterator<ItemT, InnerIteratorT, InnerItemT> {
     iterator: InnerIteratorT,
-    convert: fn(InnerItemT) -> ItemT,
+    convert: fn(InnerItemT) -> Option<ItemT>,
 }
 
 impl<ItemT, InnerIteratorT, InnerItemT> ConvertingIterator<ItemT, InnerIteratorT, InnerItemT> {
     /// Constructor.
-    pub fn new(iterator: InnerIteratorT, convert: fn(InnerItemT) -> ItemT) -> Self {
+    pub fn new(iterator: InnerIteratorT, convert: fn(InnerItemT) -> Option<ItemT>) -> Self {
         Self { iterator, convert }
     }
 }
@@ -23,6 +23,6 @@ where
     type Item = ItemT;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.iterator.next().map(|inner_item| (self.convert)(inner_item))
+        self.iterator.next().and_then(|inner_item| (self.convert)(inner_item))
     }
 }

@@ -15,7 +15,7 @@ pub fn write_debug_as_list<'own, ItemT, IteratorT, WriteT>(
     context: &DebugContext,
 ) -> Result<()>
 where
-    ItemT: Debuggable + 'own,
+    ItemT: 'own + Debuggable,
     IteratorT: Iterator<Item = &'own ItemT>,
     WriteT: Write,
 {

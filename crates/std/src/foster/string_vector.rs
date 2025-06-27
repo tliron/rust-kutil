@@ -213,8 +213,12 @@ impl<'own> IntoIterator for &'own FosterStringVector {
 
     fn into_iter(self) -> Self::IntoIter {
         match self {
-            Foster::Owned(strings) => Foster::new_owned(ConvertingIterator::new(strings.iter(), |string| &string)),
-            Foster::Fostered(strings) => Foster::new_fostered(ConvertingIterator::new(strings.iter(), |string| string)),
+            Foster::Owned(strings) => {
+                Foster::new_owned(ConvertingIterator::new(strings.iter(), |string| Some(&string)))
+            }
+            Foster::Fostered(strings) => {
+                Foster::new_fostered(ConvertingIterator::new(strings.iter(), |string| Some(string)))
+            }
         }
     }
 }

@@ -110,10 +110,11 @@ impl ETagMatcher {
             Selector::Any => true,
 
             Selector::Specific(selector) => {
-                if let Some(reference) = reference {
-                    if !reference.weak && selector.0.contains(&reference) {
-                        return true;
-                    }
+                if let Some(reference) = reference
+                    && !reference.weak
+                    && selector.0.contains(&reference)
+                {
+                    return true;
                 }
 
                 false

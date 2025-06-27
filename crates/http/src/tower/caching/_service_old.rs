@@ -81,13 +81,12 @@ where
             true
         };
 
-        if !skip_cache {
-            if let Some(cacheable) = &self.caching.cacheable_by_request {
-                if !cacheable(CacheableHookContext::new(request.uri(), request.headers())) {
-                    tracing::debug!("skip (cacheable_by_request=false)");
-                    skip_cache = true;
-                }
-            }
+        if !skip_cache
+            && let Some(cacheable) = &self.caching.cacheable_by_request
+            && !cacheable(CacheableHookContext::new(request.uri(), request.headers()))
+        {
+            tracing::debug!("skip (cacheable_by_request=false)");
+            skip_cache = true;
         }
 
         skip_cache
@@ -107,13 +106,12 @@ where
             None => Encoding::Identity,
         };
 
-        if encoding != Encoding::Identity {
-            if let Some(encodable) = &self.encoding.encodable_by_request {
-                if !encodable(EncodableHookContext::new(&encoding, request.uri(), request.headers())) {
-                    tracing::debug!("not encoding to {} (encodable_by_request=false)", encoding);
-                    encoding = Encoding::Identity;
-                }
-            }
+        if encoding != Encoding::Identity
+            && let Some(encodable) = &self.encoding.encodable_by_request
+            && !encodable(EncodableHookContext::new(&encoding, request.uri(), request.headers()))
+        {
+            tracing::debug!("not encoding to {} (encodable_by_request=false)", encoding);
+            encoding = Encoding::Identity;
         }
 
         encoding

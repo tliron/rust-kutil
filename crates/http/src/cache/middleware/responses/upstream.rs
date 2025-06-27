@@ -74,13 +74,12 @@ impl<ResponseBodyT> UpstreamResponse<ResponseBodyT> for Response<ResponseBodyT> 
             }
         };
 
-        if !skip_cache.0 {
-            if let Some(cacheable) = &configuration.cacheable_by_response {
-                if !cacheable(CacheableHookContext::new(uri, headers)) {
-                    tracing::debug!("skip (cacheable_by_response=false)");
-                    skip_cache.0 = true;
-                }
-            }
+        if !skip_cache.0
+            && let Some(cacheable) = &configuration.cacheable_by_response
+            && !cacheable(CacheableHookContext::new(uri, headers))
+        {
+            tracing::debug!("skip (cacheable_by_response=false)");
+            skip_cache.0 = true;
         }
 
         skip_cache
