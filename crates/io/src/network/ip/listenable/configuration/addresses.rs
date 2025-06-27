@@ -41,16 +41,15 @@ impl ListenableAddressesConfiguration {
     ///
     /// If `allow_unspecified` is true:
     ///
-    /// * If the hint is [None](Option::None) we'll provide the two unspecified addresses for both
-    ///   IP versions, "::" (IPv6) and "0.0.0.0" (IPv4).
+    /// * If the hint is [None] we'll provide the two unspecified addresses for both IP versions,
+    ///   "::" (IPv6) and "0.0.0.0" (IPv4).
     /// * Otherwise we will use the hint as is. If it's IPv6 it will include `flowinfo` and
     ///   `scope`.
     ///
     /// If `allow_unspecified` is false, we'll *only* provided specified addresses (never "::" or
     /// "0.0.0.0"):
     ///
-    /// * If the hint is [None](Option::None) we'll provide reachable addresses (both IPv6 and
-    ///   IPv4).
+    /// * If the hint is [None] we'll provide reachable addresses (both IPv6 and IPv4).
     /// * If the hint is unspecified IPv6 ("::") we'll provide reachable IPv6 addresses.
     /// * If the hint is unspecified IPv4 ("0.0.0.0") we'll provide reachable IPv4 addresses.
     /// * Otherwise the hint must be a specified address so we will use it as is. If it's IPv6 it

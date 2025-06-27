@@ -1429,7 +1429,7 @@ dependencies = [
 
 [[package]]
 name = "kutil-cli"
-version = "0.0.8"
+version = "0.0.9"
 dependencies = [
  "anstream",
  "anstyle",
@@ -1456,7 +1456,7 @@ dependencies = [
 
 [[package]]
 name = "kutil-http"
-version = "0.0.5"
+version = "0.0.6"
 dependencies = [
  "async-compression",
  "axum",
@@ -1523,7 +1523,7 @@ dependencies = [
 
 [[package]]
 name = "kutil-transcoding"
-version = "0.0.3"
+version = "0.0.4"
 dependencies = [
  "async-compression",
  "bytes",

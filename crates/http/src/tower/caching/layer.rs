@@ -324,7 +324,7 @@ where
     /// Note that the headers are *request* headers. This hook is called before we have the
     /// upstream response.
     ///
-    /// [None](Option::None) by default.
+    /// [None] by default.
     pub fn cacheable_by_request(
         mut self,
         cacheable_by_request: impl Fn(CacheableHookContext) -> bool + 'static + Send + Sync,
@@ -341,7 +341,7 @@ where
     /// Note that the headers are *response* headers. This hook is called *after* we get the
     /// upstream response but *before* we read its body.
     ///
-    /// [None](Option::None) by default.
+    /// [None] by default.
     pub fn cacheable_by_response(
         mut self,
         cacheable_by_response: impl Fn(CacheableHookContext) -> bool + 'static + Send + Sync,
@@ -350,7 +350,7 @@ where
         self
     }
 
-    /// [None](Option::None) by default.
+    /// [None] by default.
     pub fn cache_key(
         mut self,
         cache_key: impl Fn(CacheKeyHookContext<CacheKeyT, RequestBodyT>) + 'static + Send + Sync,
@@ -366,7 +366,7 @@ where
     ///
     /// Note that the headers are *response* headers.
     ///
-    /// [None](Option::None) by default.
+    /// [None] by default.
     pub fn cache_duration(
         mut self,
         cache_duration: impl Fn(CacheDurationHookContext) -> Option<Duration> + 'static + Send + Sync,
@@ -425,7 +425,7 @@ where
     /// Note that the headers are *request* headers. This hook is called before we have the
     /// upstream response.
     ///
-    /// [None](Option::None) by default.
+    /// [None] by default.
     pub fn encodable_by_request(
         mut self,
         encodable_by_request: impl Fn(EncodableHookContext) -> bool + 'static + Send + Sync,
@@ -442,7 +442,7 @@ where
     /// Note that the headers are *response* headers. This hook is called *after* we get the
     /// upstream response but *before* we read its body.
     ///
-    /// [None](Option::None) by default.
+    /// [None] by default.
     pub fn encodable_by_response(
         mut self,
         encodable_by_response: impl Fn(EncodableHookContext) -> bool + 'static + Send + Sync,

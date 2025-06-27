@@ -20,7 +20,7 @@ pub trait HeaderValues {
 
     /// Parse a header value as an ASCII string.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is not a valid
+    /// [None] could mean that there is no such header *or* that it is not a valid
     /// ASCII string.
     fn string_value(&self, name: HeaderName) -> Option<&str>;
 
@@ -31,7 +31,7 @@ pub trait HeaderValues {
 
     /// Parse a header value as an ASCII string.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is not a valid
+    /// [None] could mean that there is no such header *or* that it is not a valid
     /// ASCII string.
     ///
     /// Unfortunately this is *not* zero-copy because [HeaderValue] does not give us access to its
@@ -61,7 +61,7 @@ pub trait HeaderValues {
 
     /// Parse a header from its ASCII string value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn parse_value<FromStrT>(&self, name: HeaderName) -> Option<FromStrT>
     where
         FromStrT: FromStr,
@@ -89,7 +89,7 @@ pub trait HeaderValues {
 
     /// Parse a header value as a [Duration].
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     ///
     /// See [duration-str](https://github.com/baoyachi/duration-str).
     fn duration_value(&self, name: HeaderName) -> Option<Duration> {
@@ -105,7 +105,7 @@ pub trait HeaderValues {
 
     /// Parse a header value as an [HttpDate].
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn date_value(&self, name: HeaderName) -> Option<HttpDate> {
         self.parse_value(name)
     }
@@ -168,14 +168,14 @@ pub trait HeaderValues {
 
     /// Parse the [`Content-Length`](CONTENT_LENGTH) header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn content_length(&self) -> Option<usize> {
         self.parse_value(CONTENT_LENGTH)
     }
 
     /// Parse the [`Content-Type`](CONTENT_TYPE) header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn content_type(&self) -> Option<MediaType> {
         self.parse_value(CONTENT_TYPE)
     }
@@ -207,28 +207,28 @@ pub trait HeaderValues {
 
     /// Parse the [`If-Modified-Since`](IF_MODIFIED_SINCE) request header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn if_modified_since(&self) -> Option<HttpDate> {
         self.date_value(IF_MODIFIED_SINCE)
     }
 
     /// Parse the [`If-None-Match`](IF_NONE_MATCH) request header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn if_none_match(&self) -> Option<ETagMatcher> {
         self.parse_value(IF_NONE_MATCH)
     }
 
     /// Parse the [`If-Unmodified-Since`](IF_UNMODIFIED_SINCE) request header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn if_unmodified_since(&self) -> Option<HttpDate> {
         self.date_value(IF_UNMODIFIED_SINCE)
     }
 
     /// Parse the [`If-Match`](IF_MATCH) request header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn if_match(&self) -> Option<ETagMatcher> {
         self.parse_value(IF_MATCH)
     }
@@ -239,7 +239,7 @@ pub trait HeaderValues {
     ///
     /// Returns the username and password.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn authorization_basic(&self) -> Option<(String, String)> {
         if let Some(authorization) = self.string_value(AUTHORIZATION)
             && authorization.starts_with("Basic ")
@@ -278,14 +278,14 @@ pub trait HeaderValues {
 
     /// Parse the [`Last-Modified`](LAST_MODIFIED) response header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] mean that there is no such header *or* that it is malformed.
     fn last_modified(&self) -> Option<HttpDate> {
         self.date_value(LAST_MODIFIED)
     }
 
     /// Parse the [`ETag`](ETAG) response header value.
     ///
-    /// [None](Option::None) could mean that there is no such header *or* that it is malformed.
+    /// [None] could mean that there is no such header *or* that it is malformed.
     fn etag(&self) -> Option<ETag> {
         self.parse_value(ETAG)
     }

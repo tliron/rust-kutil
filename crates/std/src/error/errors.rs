@@ -8,7 +8,7 @@ use std::{error::*, fmt, iter::*, slice, vec};
 
 /// An [Error] that contains zero or more errors.
 ///
-/// Implements [ErrorRecipient] by accumulating errors.
+/// Implements [ErrorRecipient] for accumulating errors.
 #[derive(Clone, Debug)]
 pub struct Errors<ErrorT> {
     /// The errors.
@@ -19,6 +19,11 @@ impl<ErrorT> Errors<ErrorT> {
     /// Constructor.
     pub fn new() -> Self {
         Self { errors: Vec::new() }
+    }
+
+    /// Constructor.
+    pub fn with_capacity(capacity: usize) -> Self {
+        Self { errors: Vec::with_capacity(capacity) }
     }
 
     /// True if there are no errors.
@@ -39,7 +44,11 @@ impl<ErrorT> ErrorRecipient<ErrorT> for Errors<ErrorT> {
     }
 }
 
-impl<ErrorT> Error for Errors<ErrorT> where ErrorT: Error {}
+impl<ErrorT> Default for Errors<ErrorT> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl<ErrorT> fmt::Display for Errors<ErrorT>
 where
@@ -56,6 +65,8 @@ where
         Ok(())
     }
 }
+
+impl<ErrorT> Error for Errors<ErrorT> where ErrorT: Error {}
 
 // Delegated
 
@@ -90,7 +101,7 @@ impl<'own, ErrorT> IntoIterator for &'own mut Errors<ErrorT> {
 
 impl<ErrorT> From<ErrorT> for Errors<ErrorT> {
     fn from(value: ErrorT) -> Self {
-        let mut errors = Errors::new();
+        let mut errors = Errors::with_capacity(1);
         errors.errors.push(value);
         errors
     }

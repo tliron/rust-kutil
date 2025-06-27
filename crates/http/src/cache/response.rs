@@ -44,7 +44,7 @@ impl CachedResponse {
     ///
     /// Reads the response body and stores it as [Bytes].
     ///
-    /// If `known_body_size` is not [None](Option::None) then that's the size we expect. Otherwise
+    /// If `known_body_size` is not [None] then that's the size we expect. Otherwise
     /// we'll try to read to `max_body_size` and will expect at least `min_body_size`.
     ///
     /// In either case we will return an error if the body wasn't completely read (we won't cache

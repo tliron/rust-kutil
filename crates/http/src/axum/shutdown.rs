@@ -20,7 +20,7 @@ pub struct Shutdown {
     /// Clones will retain the same coordination.
     pub handle: Handle,
 
-    /// Grace period. [None](Option::None) means indefinite.
+    /// Grace period. [None] means indefinite.
     pub grace_period: Option<Duration>,
 }
 

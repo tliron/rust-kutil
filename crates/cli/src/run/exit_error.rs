@@ -1,12 +1,12 @@
 use std::{error, fmt};
 
 //
-// Exit
+// ExitError
 //
 
-/// Information on how to exit a program.
+/// Simple exit error.
 #[derive(Clone, Debug)]
-pub struct Exit {
+pub struct ExitError {
     /// Exit code.
     pub code: u8,
 
@@ -14,10 +14,9 @@ pub struct Exit {
     pub message: Option<String>,
 }
 
-impl Exit {
+impl ExitError {
     /// Constructor.
-    pub fn new(code: u8, message: Option<&str>) -> Self {
-        let message = message.map(|message| message.into());
+    pub fn new(code: u8, message: Option<String>) -> Self {
         Self { code, message }
     }
 
@@ -26,7 +25,7 @@ impl Exit {
     where
         ToStringT: ToString,
     {
-        Self { code, message: Some(to_string.to_string()) }
+        Self::new(code, Some(to_string.to_string()))
     }
 
     /// Successful exit (code 0) without a message.
@@ -35,37 +34,39 @@ impl Exit {
     }
 }
 
-impl error::Error for Exit {}
+impl error::Error for ExitError {}
 
-impl fmt::Display for Exit {
+impl fmt::Display for ExitError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match &self.message {
             Some(message) => write!(formatter, "{}: {}", self.code, message),
-            None => fmt::Display::fmt(&self.code, formatter),
+            None => {
+                if self.code != 0 {
+                    fmt::Display::fmt(&self.code, formatter)
+                } else {
+                    Ok(())
+                }
+            }
         }
     }
 }
 
 // Conversions
 
-impl From<u8> for Exit {
+impl From<u8> for ExitError {
     fn from(value: u8) -> Self {
         Self::new(value, None)
     }
 }
 
-impl From<&str> for Exit {
-    fn from(message: &str) -> Self {
+impl From<String> for ExitError {
+    fn from(message: String) -> Self {
         Self::new(1, Some(message))
     }
 }
 
-//
-// HasExit
-//
-
-/// For types that can optionally have an [Exit].
-pub trait HasExit: fmt::Display {
-    /// Return the [Exit] if it exists.
-    fn get_exit(&self) -> Option<&Exit>;
+impl From<&str> for ExitError {
+    fn from(message: &str) -> Self {
+        message.to_string().into()
+    }
 }

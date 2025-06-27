@@ -22,7 +22,7 @@ use {
 pub trait ReadBodyIntoBytes: Sized {
     /// Read entire [Body] into [Bytes] and trailers.
     ///
-    /// If `declared_size` is not [None](Option::None) then that's the size we expect. Otherwise
+    /// If `declared_size` is not [None] then that's the size we expect. Otherwise
     /// we'll try to read up to `max_size` and will expect at least `min_size`.
     ///
     /// If we read less than `min_size` *or* we did not read all the way to EOF will return a

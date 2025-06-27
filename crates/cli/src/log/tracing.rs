@@ -15,7 +15,7 @@ const TIME_FORMAT: &[BorrowedFormatItem<'_>] = format_description!(
 
 /// Initialize a tracing subscriber.
 ///
-/// If `path` is [None](Option::None) will use colorized stderr.
+/// If `path` is [None] will use colorized stderr.
 ///
 /// * 0: no tracing subscriber.
 /// * 1: [ERROR](tracing::Level::ERROR)

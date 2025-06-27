@@ -1,4 +1,4 @@
-use super::exit::*;
+use super::run_error::*;
 
 use {
     anstream::eprintln,
@@ -24,27 +24,22 @@ pub type Runner<ErrorT> = fn() -> Result<(), ErrorT>;
 /// good stuff should go into your [Runner].
 pub fn run<ErrorT>(run: Runner<ErrorT>) -> ExitCode
 where
-    ErrorT: HasExit + fmt::Display,
+    ErrorT: RunError + fmt::Display,
 {
     match run() {
         Ok(_) => ExitCode::SUCCESS,
 
-        Err(error) => match error.get_exit() {
-            Some(exit) => {
-                if let Some(message) = &exit.message {
-                    if exit.code == 0 {
-                        eprintln!("{}", message);
-                    } else {
-                        eprintln!("{}", message.red());
-                    }
+        Err(error) => {
+            let (handled, code) = error.handle();
+
+            if !handled {
+                let error = error.to_string();
+                if !error.is_empty() {
+                    eprintln!("{}", error.red());
                 }
-                ExitCode::from(exit.code)
             }
 
-            _ => {
-                eprintln!("{}", error.red());
-                ExitCode::FAILURE
-            }
-        },
+            ExitCode::from(code)
+        }
     }
 }
