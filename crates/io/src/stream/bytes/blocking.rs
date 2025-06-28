@@ -76,7 +76,7 @@ where
                     return Ok(size);
                 }
 
-                buffer_position += size;
+                buffer_position = size;
                 buffer_remaining -= size;
             }
         }
@@ -89,7 +89,7 @@ where
                 let size = min(buffer_remaining, bytes.remaining());
 
                 if size != 0 {
-                    bytes.copy_to_slice(&mut buffer[buffer_position..size]);
+                    bytes.copy_to_slice(&mut buffer[buffer_position..buffer_position + size]);
                 }
 
                 // Store leftover bytes in the remainder
@@ -101,7 +101,7 @@ where
                 Ok(buffer_position + size)
             }
 
-            None => Ok(0),
+            None => Ok(buffer_position),
         }
     }
 }

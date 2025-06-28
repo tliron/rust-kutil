@@ -20,7 +20,7 @@ keywords = ["kutil", "std"]
 ahash = { optional = true, version = "0.8.12" }
 bytestring = { optional = true, version = "1.4.0" }
 kutil-std-macros = { optional = true, version = "=0.0.1" }
-papaya = { optional = true, version = "0.2.2" }
+papaya = { optional = true, version = "0.2.3" }
 
 [features]
 ## Enable `ByteString` implementations.
