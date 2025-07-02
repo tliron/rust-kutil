@@ -1,20 +1,20 @@
 [workspace]
-members = [
-    "crates/cli",
-    "crates/cli-macros",
-    "crates/http",
-    "crates/io",
-    "crates/std",
-    "crates/std-macros",
-    "crates/transcoding",
-]
 resolver = "3"
+members = [
+    "cli",
+    "cli-macros",
+    "http",
+    "io",
+    "std",
+    "std-macros",
+    "transcoding",
+]
 
 [patch.crates-io]
-kutil-cli = { path = "crates/cli" }
-kutil-cli-macros = { path = "crates/cli-macros" }
-kutil-http = { path = "crates/http" }
-kutil-io = { path = "crates/io" }
-kutil-std = { path = "crates/std" }
-kutil-std-macros = { path = "crates/std-macros" }
-kutil-transcoding = { path = "crates/transcoding" }
+kutil-cli = { path = "cli" }
+kutil-cli-macros = { path = "cli-macros" }
+kutil-http = { path = "http" }
+kutil-io = { path = "io" }
+kutil-std = { path = "std" }
+kutil-std-macros = { path = "std-macros" }
+kutil-transcoding = { path = "transcoding" }
