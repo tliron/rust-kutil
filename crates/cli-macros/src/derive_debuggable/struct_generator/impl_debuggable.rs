@@ -2,7 +2,7 @@ use super::generator::*;
 
 use {proc_macro2::*, quote::*};
 
-impl Generator {
+impl StructGenerator {
     /// Generate `impl Debuggable`.
     pub fn generate_impl_debuggable(&self) -> TokenStream {
         let mut segments = Vec::new();

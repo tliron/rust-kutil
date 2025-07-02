@@ -15,6 +15,8 @@ For more information and usage examples see the
 
 mod derive_debuggable;
 
+use derive_debuggable::*;
+
 // See: https://petanode.com/posts/rust-proc-macro/
 
 /// Procedural macro for `#[derive(Debuggable)]`.
@@ -23,7 +25,9 @@ pub fn derive_resolve(input: proc_macro::TokenStream) -> proc_macro::TokenStream
     let mut input: syn::DeriveInput = syn::parse_macro_input!(input);
 
     match input.data {
-        syn::Data::Struct(_) => derive_debuggable::Generator::generate(&mut input),
+        syn::Data::Struct(_) => StructGenerator::generate(&mut input),
+
+        syn::Data::Enum(_) => EnumGenerator::generate(&mut input),
 
         _ => Err(syn::Error::new(input.ident.span(), "`Debuggable`: not a struct")),
     }

@@ -3,17 +3,13 @@ use super::{r#as::*, iter::*, style::*};
 use deluxe::*;
 
 //
-// FieldAttribute
+// VariantAttribute
 //
 
-/// Field-level attribute for `#[derive(Debuggable)]`.
+/// Variant-level attribute for `#[derive(Debuggable)]`.
 #[derive(ExtractAttributes)]
 #[deluxe(attributes(debuggable))]
-pub struct FieldAttribute {
-    /// Whether this field should be skipped.
-    #[deluxe(default)]
-    pub skip: bool,
-
+pub struct VariantAttribute {
     /// How to represent the value.
     #[deluxe(default, rename = as)]
     pub value_as: As,
@@ -37,8 +33,4 @@ pub struct FieldAttribute {
     /// Whether and how to iterate.
     #[deluxe(default)]
     pub iter: Iter,
-
-    /// Optional tag.
-    #[deluxe(default)]
-    pub tag: Option<syn::Expr>,
 }

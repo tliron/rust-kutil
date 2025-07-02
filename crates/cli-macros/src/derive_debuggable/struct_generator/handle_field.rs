@@ -2,7 +2,7 @@ use super::{super::attributes::*, generator::*};
 
 use {proc_macro2::*, quote::*};
 
-impl Generator {
+impl StructGenerator {
     /// Generate field handler.
     pub fn generate_handle_field(&self, field: &Field, last: bool) -> TokenStream {
         let field_name = &field.name;
@@ -121,13 +121,13 @@ impl Generator {
         write = match &field.attribute.option {
             true => quote! {
                 match &self.#field_name {
-                    Some(value) => {
+                    ::std::option::Option::Some(value) => {
                         context.separate(writer)?;
                         context.theme.write_symbol(writer, "Some")?;
                         #write
                     },
 
-                    None => {
+                    ::std::option::Option::None => {
                         context.separate(writer)?;
                         context.theme.write_symbol(writer, "None")?;
                     },

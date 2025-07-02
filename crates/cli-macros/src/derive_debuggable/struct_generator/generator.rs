@@ -6,9 +6,9 @@ use {deluxe::*, proc_macro2::*, quote::*, syn::spanned::*};
 // Generator
 //
 
-/// Generator for `#[derive(Resolve)]`.
+/// Generator for `#[derive(Debuggable)]`.
 #[derive(Default)]
-pub struct Generator {
+pub struct StructGenerator {
     /// Name of the struct for which we are generating.
     pub struct_name: TokenStream,
 
@@ -22,7 +22,7 @@ pub struct Generator {
     pub debuggable_fields: Vec<Field>,
 }
 
-impl Generator {
+impl StructGenerator {
     /// Generate.
     pub fn generate(input: &mut syn::DeriveInput) -> syn::Result<TokenStream> {
         let generator = Self::new(input)?;

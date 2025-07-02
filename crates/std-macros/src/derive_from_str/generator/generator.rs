@@ -6,7 +6,7 @@ use {deluxe::*, proc_macro2::*, quote::*};
 // Generator
 //
 
-/// Generator for `#[derive(Display)]`.
+/// Generator for `#[derive(FromStr)]`.
 #[derive(Default)]
 pub struct Generator {
     /// Name of the enum for which we are generating.

@@ -1,3 +1,5 @@
+use super::branch::*;
+
 use deluxe::*;
 
 //
@@ -15,13 +17,4 @@ pub struct StructAttribute {
     /// Optional tag.
     #[deluxe(default)]
     pub tag: Option<syn::Expr>,
-}
-
-/// Prefix branch style.
-#[derive(Default, ParseMetaItem)]
-pub enum Branch {
-    #[default]
-    Thin,
-    Thick,
-    Double,
 }
