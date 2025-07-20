@@ -17,11 +17,11 @@ pub struct ListenablePortConfiguration {
     /// Optional address or hint.
     pub address_hint: Option<IpAddr>,
 
+    /// Optional zone for IPv6 address.
+    pub zone: Option<String>,
+
     /// Optional flowinfo for IPv6 address.
     pub flowinfo: Option<u32>,
-
-    /// Optional scope ID for IPv6 address.
-    pub scope: Option<u32>,
 
     /// Whether to allow unspecified addresses for [ToSocketAddrs].
     pub allow_unspecified: bool,
@@ -35,12 +35,12 @@ impl ListenablePortConfiguration {
     pub fn new(
         port: u16,
         address_hint: Option<IpAddr>,
+        zone: Option<String>,
         flowinfo: Option<u32>,
-        scope: Option<u32>,
         allow_unspecified: bool,
         include_loopbacks: bool,
     ) -> Self {
-        Self { port, address_hint, flowinfo, scope, allow_unspecified, include_loopbacks }
+        Self { port, address_hint, zone, flowinfo, allow_unspecified, include_loopbacks }
     }
 
     /// Addresses.
@@ -49,8 +49,8 @@ impl ListenablePortConfiguration {
     pub fn addresses(&self) -> io::Result<Vec<ListenableAddress>> {
         ListenableAddressesConfiguration::new(
             self.address_hint,
+            self.zone.clone(),
             self.flowinfo,
-            self.scope,
             self.allow_unspecified,
             self.include_loopbacks,
         )
@@ -62,9 +62,11 @@ impl ToSocketAddrs for ListenablePortConfiguration {
     type Iter = vec::IntoIter<SocketAddr>;
 
     fn to_socket_addrs(&self) -> io::Result<Self::Iter> {
-        let addresses: Vec<_> =
-            self.addresses()?.into_iter().map(|address| address.to_socket_address(self.port)).collect();
-
-        Ok(addresses.into_iter())
+        let addresses = self.addresses()?;
+        let mut socket_addresses = Vec::with_capacity(addresses.len());
+        for address in addresses {
+            socket_addresses.push(address.to_socket_address(self.port)?);
+        }
+        Ok(socket_addresses.into_iter())
     }
 }

@@ -1,4 +1,4 @@
-use std::net::*;
+use std::{io, net::*};
 
 //
 // ListenableAddress
@@ -10,11 +10,11 @@ pub struct ListenableAddress {
     /// Address.
     pub address: IpAddr,
 
+    /// Optional zone for IPv6 address.
+    pub zone: Option<String>,
+
     /// Optional flowinfo for IPv6 address.
     pub flowinfo: Option<u32>,
-
-    /// Optional scope ID for IPv6 address.
-    pub scope: Option<u32>,
 }
 
 impl ListenableAddress {
@@ -31,25 +31,34 @@ impl ListenableAddress {
 
     /// Constructor.
     pub const fn new(address: IpAddr) -> Self {
-        Self { address, flowinfo: None, scope: None }
+        Self { address, zone: None, flowinfo: None }
     }
 
     /// Constructor.
-    pub const fn new_with(address: IpAddr, flowinfo: Option<u32>, scope: Option<u32>) -> Self {
-        Self { address, flowinfo, scope }
+    pub const fn new_with(address: IpAddr, zone: Option<String>, flowinfo: Option<u32>) -> Self {
+        Self { address, zone, flowinfo }
     }
 
     /// To [SocketAddr].
-    pub fn to_socket_address(&self, port: u16) -> SocketAddr {
-        match self.address {
+    pub fn to_socket_address(&self, port: u16) -> io::Result<SocketAddr> {
+        Ok(match self.address {
             IpAddr::V6(address) => {
-                // BROKEN: Scope is ignored when binding?
                 // See: https://github.com/rust-lang/libs-team/issues/476#issuecomment-2825453898
-                SocketAddrV6::new(address, port, self.flowinfo.unwrap_or_default(), self.scope.unwrap_or_default())
-                    .into()
+
+                match &self.zone {
+                    Some(zone) => {
+                        // We can only set the zone via `to_socket_addrs`
+                        (address.to_string() + "%" + zone, port)
+                            .to_socket_addrs()?
+                            .next()
+                            .ok_or(io::Error::other("no socket address found"))?
+                    }
+
+                    None => SocketAddrV6::new(address, port, self.flowinfo.unwrap_or_default(), 0).into(),
+                }
             }
 
             IpAddr::V4(address) => SocketAddrV4::new(address, port).into(),
-        }
+        })
     }
 }

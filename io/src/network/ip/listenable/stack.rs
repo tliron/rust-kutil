@@ -27,10 +27,7 @@ impl IPStack {
                     for address in &interface.ipv6 {
                         let address = address.addr();
                         if (include_loopbacks && address.is_loopback()) || address.is_reachable() {
-                            // TODO: how can we get the scope?
-                            let scope = None;
-
-                            reachable_addresses.push(ListenableAddress::new_with(address.into(), None, scope));
+                            reachable_addresses.push(ListenableAddress::new_with(address.into(), None, None));
                         }
                     }
                 }
