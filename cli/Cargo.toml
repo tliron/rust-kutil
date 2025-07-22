@@ -18,9 +18,10 @@ keywords = ["kutil", "cli", "clap"]
 
 [dependencies]
 anstream = "0.6.19"
-anstyle = "1.0.11"
-clap = { version = "4.5.41", features = ["derive"] }
-clap_complete_command = "0.6.1"
+anstyle = { optional = true, version = "1.0.11" }
+build-info = { optional = true, version = "0.0.41" }
+clap = { optional = true, version = "4.5.41", features = ["derive"] }
+clap_complete_command = { optional = true, version = "0.6.1" }
 kutil-cli-macros = { optional = true, version = "=0.0.5" }
 owo-colors = "4.2.2"
 time = { version = "0.3.41", features = ["macros"] }
@@ -31,10 +32,15 @@ tracing-subscriber = { version = "0.3.19", features = [
     "local-time",
 ] }
 
+[build-dependencies]
+build-info-build = { optional = true, version = "0.0.41" }
+
 [dev-dependencies]
 kutil-std = "=0.0.6"
 
 [features]
+### Clap utilities.
+clap = ["dep:clap", "dep:clap_complete_command", "dep:anstyle", "dep:build-info", "dep:build-info-build"]
 ## Include procedural macros for `derive`.
 derive = ["dep:kutil-cli-macros"]
 

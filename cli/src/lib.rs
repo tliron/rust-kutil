@@ -14,6 +14,7 @@ For more information and usage examples see the
 */
 
 /// Clap utilities.
+#[cfg(feature = "clap")]
 pub mod clap;
 
 /// Debugging utilities.
