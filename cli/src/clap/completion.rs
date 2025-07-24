@@ -7,6 +7,10 @@ use {clap::*, clap_complete_command::*, std::io};
 /// Clap command to generate shell auto-completion scripts.
 #[derive(Args, Clone, Debug)]
 pub struct Completion {
+    /// show this help
+    #[arg(long, short = 'h', action = ArgAction::Help)]
+    pub help: Option<bool>,
+
     /// shell
     #[arg(value_enum)]
     shell: Shell,
