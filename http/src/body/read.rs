@@ -1,11 +1,10 @@
 use super::{super::pieces::*, reader::*};
 
 use {
-    bytes::*,
     http::*,
     http_body::*,
     kutil_io::reader::*,
-    kutil_std::error::*,
+    kutil_std::{error::*, zerocopy::*},
     std::{io, result::Result, string::*},
     thiserror::*,
     tokio::io::*,
@@ -19,7 +18,10 @@ use {
 ///
 /// See also [BodyReader].
 #[allow(async_fn_in_trait)]
-pub trait ReadBodyIntoBytes: Sized {
+pub trait ReadBodyIntoBytes
+where
+    Self: Sized,
+{
     /// Read entire [Body] into [Bytes] and trailers.
     ///
     /// If `declared_size` is not [None] then that's the size we expect. Otherwise

@@ -49,7 +49,7 @@ pub struct DebugContext<'own> {
 impl<'own> DebugContext<'own> {
     /// Constructor.
     pub fn new(theme: &'own Theme) -> Self {
-        Self { theme, format: DebugFormat::default(), inline: false, separator: false, indentation: String::new() }
+        Self { theme, format: Default::default(), inline: false, separator: false, indentation: Default::default() }
     }
 
     /// Create child context.
@@ -160,11 +160,7 @@ impl<'own> DebugContext<'own> {
     where
         WriteT: Write,
     {
-        if last {
-            self.indent_into(writer, BRANCH_INTO_LAST)
-        } else {
-            self.indent_into(writer, BRANCH_INTO_ONGOING)
-        }
+        if last { self.indent_into(writer, BRANCH_INTO_LAST) } else { self.indent_into(writer, BRANCH_INTO_ONGOING) }
     }
 
     /// Write a newline plus the indentation plus a thick branch-into delimiter.
@@ -197,11 +193,7 @@ impl<'own> DebugContext<'own> {
     where
         WriteT: Write,
     {
-        if first && !self.inline {
-            self.separate(writer)
-        } else {
-            self.indent(writer)
-        }
+        if first && !self.inline { self.separate(writer) } else { self.indent(writer) }
     }
 
     /// If the inline flag is false and first is true write the separator. Otherwise write a

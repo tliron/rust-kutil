@@ -4,7 +4,7 @@ edition = "2024"
 name = "kutil-cli"
 description = "CLI utilities from Kutil"
 version = "0.0.9"
-rust-version = "1.88"
+rust-version = "1.89"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"
@@ -17,11 +17,12 @@ categories = ["command-line-utilities"] # https://crates.io/category_slugs
 keywords = ["kutil", "cli", "clap"]
 
 [dependencies]
-anstream = "0.6.19"
+anstream = "0.6.20"
 anstyle = { optional = true, version = "1.0.11" }
 build-info = { optional = true, version = "0.0.41" }
-clap = { optional = true, version = "4.5.41", features = ["derive"] }
+clap = { optional = true, version = "4.5.44", features = ["derive"] }
 clap_complete_command = { optional = true, version = "0.6.1" }
+clap_mangen = { optional = true, version = "0.2.29" }
 kutil-cli-macros = { optional = true, version = "=0.0.5" }
 owo-colors = "4.2.2"
 time = { version = "0.3.41", features = ["macros"] }
@@ -40,7 +41,14 @@ kutil-std = "=0.0.6"
 
 [features]
 ### Clap utilities.
-clap = ["dep:clap", "dep:clap_complete_command", "dep:anstyle", "dep:build-info", "dep:build-info-build"]
+clap = [
+    "dep:clap",
+    "dep:clap_complete_command",
+    "dep:clap_mangen",
+    "dep:anstyle",
+    "dep:build-info",
+    "dep:build-info-build",
+]
 ## Include procedural macros for `derive`.
 derive = ["dep:kutil-cli-macros"]
 

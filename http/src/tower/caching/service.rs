@@ -5,10 +5,9 @@ use super::super::super::{
 };
 
 use {
-    ::bytes::*,
     http::{request::*, response::*},
     http_body::*,
-    kutil_std::{capture_async, error::*, future::*},
+    kutil_std::{capture_async, error::*, future::*, zerocopy::*},
     std::{convert::*, mem, result::Result, sync::*, task::*},
     tower::*,
 };

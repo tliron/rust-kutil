@@ -126,7 +126,7 @@ impl fmt::Display for FosterString {
 ///
 #[macro_export]
 macro_rules! delegate_newtype_of_foster_string {
-    ( $type:ty ) => {
+    ( $type:ty $(,)? ) => {
         impl $type {
             /// Constructor.
             pub const fn new_owned(string: ::std::string::String) -> Self {

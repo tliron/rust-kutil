@@ -1,10 +1,9 @@
 use super::{super::headers::*, body::*};
 
 use {
-    ::bytes::*,
     http::{header::*, *},
     http_body::*,
-    kutil_std::error::*,
+    kutil_std::{error::*, zerocopy::*},
     kutil_transcoding::*,
 };
 
@@ -13,8 +12,9 @@ use {
 //
 
 /// Into a [Response] with a [TranscodingBody].
-pub trait IntoTranscodingResponse<BodyT>: Sized
+pub trait IntoTranscodingResponse<BodyT>
 where
+    Self: Sized,
     BodyT: Body,
     BodyT::Error: Into<CapturedError>,
 {
@@ -125,7 +125,7 @@ where
     BodyT: Body + From<Bytes>,
     BodyT::Error: Into<CapturedError>,
 {
-    let mut response = Response::new(Bytes::new().into()).with_transcoding_body_passthrough_with_first_bytes(None);
+    let mut response = Response::new(Bytes::default().into()).with_transcoding_body_passthrough_with_first_bytes(None);
     *response.status_mut() = StatusCode::INTERNAL_SERVER_ERROR;
     response
 }
@@ -136,7 +136,7 @@ where
     BodyT: Body + From<Bytes>,
     BodyT::Error: Into<CapturedError>,
 {
-    let mut response = Response::new(Bytes::new().into()).with_transcoding_body_passthrough_with_first_bytes(None);
+    let mut response = Response::new(Bytes::default().into()).with_transcoding_body_passthrough_with_first_bytes(None);
     *response.status_mut() = StatusCode::NOT_MODIFIED;
     response
 }

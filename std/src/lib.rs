@@ -13,6 +13,9 @@ For more information and usage examples see the
 [home page](https://github.com/tliron/rust-kutil).
 */
 
+/// [Any](std::any::Any) utilities.
+pub mod any;
+
 /// Borrow utilities.
 pub mod borrow;
 
@@ -42,6 +45,11 @@ pub mod string;
 
 /// Synchronization utilities.
 pub mod sync;
+
+/// Zero-copy utilities.
+#[cfg(feature = "zerocopy")]
+#[allow(unused_imports)]
+pub mod zerocopy;
 
 #[cfg(feature = "derive")]
 #[allow(unused_imports)]

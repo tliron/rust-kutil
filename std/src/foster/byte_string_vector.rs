@@ -1,14 +1,11 @@
 use super::{
-    super::{borrow::*, iter::*},
+    super::{borrow::*, iter::*, zerocopy::*},
     foster::*,
     has_length::*,
     iterator::*,
 };
 
-use {
-    bytestring::*,
-    std::{cmp::*, hash::*, slice::*},
-};
+use std::{cmp::*, hash::*, slice::*};
 
 /// [Foster] for [Vec]\<[ByteString]\>.
 ///
@@ -247,10 +244,10 @@ impl<'own> IntoIterator for &'own FosterByteStringVector {
 ///
 #[macro_export]
 macro_rules! delegate_newtype_of_foster_byte_string_vector {
-    ( $type:ty ) => {
+    ( $type:ty $(,)? ) => {
         impl $type {
             /// Constructor.
-            pub fn new_owned(strings: ::std::vec::Vec<::bytestring::ByteString>) -> Self {
+            pub fn new_owned(strings: ::std::vec::Vec<::kutil_std::zerocopy::ByteString>) -> Self {
                 Self(::kutil_std::foster::Foster::new_owned(strings))
             }
 
@@ -275,8 +272,8 @@ macro_rules! delegate_newtype_of_foster_byte_string_vector {
             }
         }
 
-        impl ::std::convert::From<::std::vec::Vec<::bytestring::ByteString>> for $type {
-            fn from(strings: Vec<::bytestring::ByteString>) -> Self {
+        impl ::std::convert::From<::std::vec::Vec<::kutil_std::zerocopy::ByteString>> for $type {
+            fn from(strings: Vec<::kutil_std::zerocopy::ByteString>) -> Self {
                 strings.into()
             }
         }
@@ -314,9 +311,9 @@ macro_rules! delegate_newtype_of_foster_byte_string_vector {
             type Item = &'own str;
             type IntoIter = ::kutil_std::foster::FosterIterator<
                 &'own str,
-                &'own ::bytestring::ByteString,
+                &'own ::kutil_std::zerocopy::ByteString,
                 &'own &'static str,
-                ::std::slice::Iter<'own, ::bytestring::ByteString>,
+                ::std::slice::Iter<'own, ::kutil_std::zerocopy::ByteString>,
                 ::std::slice::Iter<'own, &'static str>,
             >;
 

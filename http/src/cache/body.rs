@@ -1,8 +1,7 @@
 use super::{configuration::*, weight::*};
 
 use {
-    ::bytes::*,
-    kutil_std::collections::*,
+    kutil_std::{collections::*, zerocopy::*},
     kutil_transcoding::{transcode::*, *},
     std::io,
 };
@@ -12,18 +11,13 @@ use {
 //
 
 /// Cached HTTP response body.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct CachedBody {
     /// Representations.
     pub representations: FastHashMap<Encoding, Bytes>,
 }
 
 impl CachedBody {
-    /// Constructor.
-    pub fn new() -> Self {
-        Self { representations: FastHashMap::new() }
-    }
-
     /// Constructor with an initial representation.
     ///
     /// If the `preferred_encoding` is different from the `encoding` then we will reencode.
@@ -36,7 +30,7 @@ impl CachedBody {
         preferred_encoding: Encoding,
         configuration: &EncodingConfiguration,
     ) -> io::Result<Self> {
-        let mut representations = FastHashMap::new();
+        let mut representations = FastHashMap::default();
 
         if preferred_encoding == encoding {
             // It's already in the preferred encoding
@@ -107,7 +101,7 @@ impl CachedBody {
 
                     // This should never happen (but we don't want to panic here!)
                     tracing::error!("no encodings");
-                    Ok((Bytes::new(), None))
+                    Ok((Default::default(), None))
                 }
 
                 to_encoding => {
@@ -141,7 +135,7 @@ impl CachedBody {
 
                         // This should never happen (but we don't want to panic here!)
                         tracing::error!("no encodings");
-                        Ok((Bytes::new(), None))
+                        Ok((Default::default(), None))
                     }
                 }
             },

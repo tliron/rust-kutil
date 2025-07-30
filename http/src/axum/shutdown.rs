@@ -27,7 +27,7 @@ pub struct Shutdown {
 impl Shutdown {
     /// Constructor.
     pub fn new(grace_period: Option<Duration>) -> Self {
-        Self { handle: Handle::new(), grace_period }
+        Self { handle: Default::default(), grace_period }
     }
 
     /// Shutdown (graceful).
@@ -49,7 +49,7 @@ impl Shutdown {
     ///
     /// Also returns the [JoinHandle] for the listener task.
     pub fn cancellation_token(&self) -> (CancellationToken, JoinHandle<()>) {
-        let token = CancellationToken::new();
+        let token = CancellationToken::default();
 
         let shutdown = self.clone();
 

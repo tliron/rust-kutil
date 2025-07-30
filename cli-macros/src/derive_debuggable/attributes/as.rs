@@ -8,9 +8,9 @@ use {deluxe::*, proc_macro2::*, quote::*};
 
 #[derive(Default, ParseMetaItem)]
 pub enum As {
-    #[default]
     Debug,
     DebugAlt,
+    #[default]
     Display,
     Debuggable,
     #[deluxe(rename = dyn_debuggable)]

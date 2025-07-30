@@ -1,17 +1,12 @@
 /// Define a message error.
 #[macro_export]
 macro_rules! message_error {
-    ( $type:ident, $message:literal ) => {
+    ( $type:ident, $message:literal $(,)? ) => {
         /// $type.
         #[derive(Clone, Debug, Default)]
         pub struct $type(::std::option::Option<::std::string::String>);
 
         impl $type {
-            /// Constructor.
-            pub fn new() -> Self {
-                Self(::std::option::Option::None)
-            }
-
             /// Constructor.
             pub fn new_from<DisplayT>(display: DisplayT) -> Self
             where

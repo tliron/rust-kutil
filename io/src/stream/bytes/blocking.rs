@@ -1,9 +1,8 @@
 use super::super::blocking::*;
 
 use {
-    bytes::*,
     futures::*,
-    kutil_std::error::*,
+    kutil_std::{error::*, zerocopy::*},
     std::{cmp::*, io},
 };
 

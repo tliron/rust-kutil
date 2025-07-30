@@ -30,7 +30,7 @@ pub trait Debuggable {
     where
         WriteT: Write,
     {
-        self.write_debug_for(writer, &DebugContext::new(&Theme::default()).with_format(format))?;
+        self.write_debug_for(writer, &DebugContext::new(&Default::default()).with_format(format))?;
         writeln!(writer)
     }
 
@@ -39,7 +39,7 @@ pub trait Debuggable {
     where
         WriteT: Write,
     {
-        self.write_debug_with_format(writer, DebugFormat::default())
+        self.write_debug_with_format(writer, Default::default())
     }
 
     /// Write the debug representation with the plain theme and a final newline.
@@ -56,7 +56,7 @@ pub trait Debuggable {
     where
         WriteT: Write,
     {
-        self.write_debug_with_format(writer, DebugFormat::default())
+        self.write_debug_with_format(writer, Default::default())
     }
 
     // print_debug
@@ -72,7 +72,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn print_debug(&self) {
-        self.print_debug_with_format(DebugFormat::default());
+        self.print_debug_with_format(Default::default());
     }
 
     /// Print the debug representation to [stdout] with the plain theme and a final newline.
@@ -86,7 +86,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn print_debug_plain(&self) {
-        self.print_debug_plain_with_format(DebugFormat::default());
+        self.print_debug_plain_with_format(Default::default());
     }
 
     // eprint_debug
@@ -102,7 +102,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn eprint_debug(&self) {
-        self.eprint_debug_with_format(DebugFormat::default());
+        self.eprint_debug_with_format(Default::default());
     }
 
     /// Print the debug representation to [stderr] with the plain theme and a final newline.
@@ -116,7 +116,7 @@ pub trait Debuggable {
     ///
     /// Panics on write [Error].
     fn eprint_debug_plain(&self) {
-        self.eprint_debug_plain_with_format(DebugFormat::default());
+        self.eprint_debug_plain_with_format(Default::default());
     }
 
     /// Capture [write_debug_for](Debuggable::write_debug_for) into a string.
@@ -128,6 +128,6 @@ pub trait Debuggable {
 
     /// Capture [write_debug_for](Debuggable::write_debug_for) into a string.
     fn to_debug_string(&self, theme: &Theme) -> Result<String> {
-        self.to_debug_string_with_format(theme, DebugFormat::default())
+        self.to_debug_string_with_format(theme, Default::default())
     }
 }

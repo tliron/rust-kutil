@@ -1,6 +1,11 @@
-/// Fast [HashSet](std::collections::HashSet).
-///
-/// The implementation uses [ahash::RandomState].
-pub type FastHashSet<ValueT> = std::collections::HashSet<ValueT, ahash::RandomState>;
+use std::collections::*;
 
-pub use ahash::HashSetExt;
+/// Fast [HashSet].
+///
+/// The implementation uses [rapidhash::fast::RandomState].
+///
+/// Note that this rapidhash a
+/// [non-cryptographic hash function](https://en.wikipedia.org/wiki/Non-cryptographic_hash_function).
+pub type FastHashSet<ValueT> = HashSet<ValueT, rapidhash::fast::RandomState>;
+
+pub use rapidhash::inner::HashSetExt;

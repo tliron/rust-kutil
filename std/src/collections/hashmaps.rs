@@ -1,11 +1,19 @@
-/// Fast [HashMap](std::collections::HashMap).
-///
-/// The implementation uses [ahash::RandomState].
-pub type FastHashMap<KeyT, ValueT> = std::collections::HashMap<KeyT, ValueT, ahash::RandomState>;
+use std::collections::*;
 
-/// Fast concurrent [HashMap](std::collections::HashMap).
+/// Fast [HashMap].
 ///
-/// The implementation uses [papaya::HashMap] and [ahash::RandomState].
-pub type FastConcurrentHashMap<KeyT, ValueT> = papaya::HashMap<KeyT, ValueT, ahash::RandomState>;
+/// The implementation uses [rapidhash::fast::RandomState].
+///
+/// Note that rapidhash is a
+/// [non-cryptographic hash function](https://en.wikipedia.org/wiki/Non-cryptographic_hash_function).
+pub type FastHashMap<KeyT, ValueT> = HashMap<KeyT, ValueT, rapidhash::fast::RandomState>;
 
-pub use ahash::HashMapExt;
+/// Fast concurrent [HashMap].
+///
+/// The implementation uses [papaya::HashMap] and [rapidhash::fast::RandomState].
+///
+/// Note that rapidhash is a
+/// [non-cryptographic hash function](https://en.wikipedia.org/wiki/Non-cryptographic_hash_function).
+pub type FastConcurrentHashMap<KeyT, ValueT> = papaya::HashMap<KeyT, ValueT, rapidhash::fast::RandomState>;
+
+pub use rapidhash::inner::HashMapExt;

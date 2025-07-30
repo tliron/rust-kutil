@@ -19,7 +19,7 @@ impl IPStack {
     /// guarantee for order. In particular, IPv6 and IPv4 are not grouped separately for
     /// [Dual](Self::Dual).
     pub fn reachable_addresses(&self, include_loopbacks: bool) -> io::Result<Vec<ListenableAddress>> {
-        let mut reachable_addresses = Vec::new();
+        let mut reachable_addresses = Vec::default();
 
         for interface in netdev::get_interfaces() {
             if interface.is_up() && interface.is_running() {

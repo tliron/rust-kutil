@@ -55,10 +55,10 @@ async fn main() {
 
     // All you need to do is add our layer to the router
 
-    let router = Router::new()
+    let router = Router::default()
         .route("/", get(("Hello, world!\n",)))
         .layer(
-            CachingLayer::new()
+            CachingLayer::default()
                 .cache(cache.clone())
                 .max_cacheable_body_size(MAX_BODY_SIZE)
                 .keep_identity_encoding(false),

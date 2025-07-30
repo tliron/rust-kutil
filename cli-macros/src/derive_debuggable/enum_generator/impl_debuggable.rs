@@ -5,7 +5,7 @@ use {proc_macro2::*, quote::*};
 impl EnumGenerator {
     /// Generate `impl Debuggable`.
     pub fn generate_impl_debuggable(&self) -> TokenStream {
-        let mut segments = Vec::new();
+        let mut segments = Vec::default();
 
         for variant in &self.variants {
             segments.push(self.generate_handle_variant(variant));

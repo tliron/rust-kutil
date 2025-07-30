@@ -1,7 +1,7 @@
 use kutil_std::string::*;
 
 pub fn main() {
-    let options = Vec::<&str>::new();
+    let options = Vec::<&str>::default();
     println!("joined: {}", options.join_conjunction("or"));
 
     let options = &["one"];

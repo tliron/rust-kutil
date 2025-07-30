@@ -5,7 +5,7 @@ use {proc_macro2::*, quote::*};
 impl StructGenerator {
     /// Generate `impl Debuggable`.
     pub fn generate_impl_debuggable(&self) -> TokenStream {
-        let mut segments = Vec::new();
+        let mut segments = Vec::default();
 
         let mut iterator = self.debuggable_fields.iter().peekable();
         while let Some(debuggable_field) = iterator.next() {
@@ -16,7 +16,7 @@ impl StructGenerator {
             Some(tag) => quote! {
                 #tag(self, "", writer, context)?;
             },
-            None => TokenStream::new(),
+            None => Default::default(),
         };
 
         let struct_name = &self.struct_name;

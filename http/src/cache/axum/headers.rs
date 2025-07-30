@@ -14,8 +14,9 @@ use {
 //
 
 /// Headers.
-pub trait Headers<IntoResponseT>: Sized
+pub trait Headers<IntoResponseT>
 where
+    Self: Sized,
     IntoResponseT: IntoResponse,
 {
     /// Set `XX-Encode` header to "false".

@@ -42,7 +42,7 @@ impl<SelectionT> Selector<SelectionT> {
                 if candidates.contains(&selection) {
                     vec![selection]
                 } else {
-                    Vec::new()
+                    Default::default()
                 }
             }
         }

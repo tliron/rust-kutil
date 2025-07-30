@@ -236,7 +236,7 @@ impl<'own> IntoIterator for &'own FosterStringVector {
 ///
 #[macro_export]
 macro_rules! delegate_newtype_of_foster_string_vector {
-    ( $type:ty ) => {
+    ( $type:ty $(,)? ) => {
         impl $type {
             /// Constructor.
             pub fn new_owned(strings: ::std::vec::Vec<::std::string::String>) -> Self {

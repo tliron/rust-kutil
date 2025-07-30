@@ -1,9 +1,10 @@
-use super::{super::borrow::*, foster::*, has_length::*};
-
-use {
-    bytestring::*,
-    std::{cmp::*, fmt, hash::*},
+use super::{
+    super::{borrow::*, zerocopy::*},
+    foster::*,
+    has_length::*,
 };
+
+use std::{cmp::*, fmt, hash::*};
 
 /// [Foster] for [ByteString].
 ///
@@ -138,10 +139,10 @@ impl fmt::Display for FosterByteString {
 ///
 #[macro_export]
 macro_rules! delegate_newtype_of_foster_byte_string {
-    ( $type:ty ) => {
+    ( $type:ty $(,)? ) => {
         impl $type {
             /// Constructor.
-            pub const fn new_owned(string: ::std::boxed::Box<::bytestring::ByteString>) -> Self {
+            pub const fn new_owned(string: ::std::boxed::Box<::kutil_std::zerocopy::ByteString>) -> Self {
                 Self(::kutil_std::foster::Foster::new_owned(string))
             }
 
@@ -168,8 +169,8 @@ macro_rules! delegate_newtype_of_foster_byte_string {
             }
         }
 
-        impl ::std::convert::From<::bytestring::ByteString> for $type {
-            fn from(string: ::bytestring::ByteString) -> Self {
+        impl ::std::convert::From<::kutil_std::zerocopy::ByteString> for $type {
+            fn from(string: ::kutil_std::zerocopy::ByteString) -> Self {
                 string.into()
             }
         }
@@ -201,7 +202,7 @@ macro_rules! delegate_newtype_of_foster_byte_string {
         impl ::std::cmp::Eq for $type {}
 
         impl ::std::cmp::PartialOrd for $type {
-            fn partial_cmp(&self, other: &Self) -> Option<::std::cmp::Ordering> {
+            fn partial_cmp(&self, other: &Self) -> ::std::option::Option<::std::cmp::Ordering> {
                 self.0.partial_cmp(&other.0)
             }
         }

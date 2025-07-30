@@ -5,7 +5,7 @@ use {proc_macro2::*, quote::*};
 impl Generator {
     /// Generate `impl Display`.
     pub fn generate_impl_display(&self) -> TokenStream {
-        let mut segments = Vec::<TokenStream>::new();
+        let mut segments = Vec::<TokenStream>::default();
 
         for variant in &self.display_variants {
             let variant_name = &variant.name;

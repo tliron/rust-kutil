@@ -9,7 +9,10 @@ use super::{
 //
 
 /// Add support for [CachedResponse] weigher and [Expiry](moka::Expiry).
-pub trait ForHttpResponse: Sized {
+pub trait ForHttpResponse
+where
+    Self: Sized,
+{
     /// Add support for [CachedResponse] weigher and [Expiry](moka::Expiry).
     fn for_http_response(self) -> Self;
 }

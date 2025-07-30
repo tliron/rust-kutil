@@ -1,11 +1,10 @@
 use super::super::body::*;
 
 use {
-    ::bytes::*,
     async_compression::*,
     http::*,
     http_body::*,
-    kutil_std::error::*,
+    kutil_std::{error::*, zerocopy::*},
     kutil_transcoding::{reader::*, *},
     pin_project::*,
     std::{collections::*, io, pin::*, result::Result, task::*},
@@ -121,8 +120,9 @@ where
 //
 
 /// Into a [TranscodingBody].
-pub trait IntoTranscodingBody<BodyT>: Sized
+pub trait IntoTranscodingBody<BodyT>
 where
+    Self: Sized,
     BodyT: Body,
     BodyT::Error: Into<CapturedError>,
 {

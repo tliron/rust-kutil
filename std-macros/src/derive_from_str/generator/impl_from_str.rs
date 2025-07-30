@@ -5,7 +5,7 @@ use {proc_macro2::*, quote::*};
 impl Generator {
     /// Generate `impl FromStr`.
     pub fn generate_impl_from_str(&self) -> TokenStream {
-        let mut segments = Vec::<TokenStream>::new();
+        let mut segments = Vec::<TokenStream>::default();
 
         for variant in &self.display_variants {
             let mut iterator = variant.strings.iter().peekable();
@@ -37,7 +37,7 @@ impl Generator {
                 .to_lowercase().as_str()
             }
         } else {
-            TokenStream::default()
+            Default::default()
         };
 
         let error = match &self.enum_attribute.error {

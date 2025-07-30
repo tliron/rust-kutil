@@ -19,7 +19,7 @@ impl EnumGenerator {
                 )?;
             }
         } else {
-            TokenStream::new()
+            Default::default()
         };
 
         let write_value = variant.attribute.value_as.generate_write_value(&variant.attribute.value_style);

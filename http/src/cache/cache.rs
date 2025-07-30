@@ -9,8 +9,9 @@ use super::{key::*, response::*};
 /// Cloning should be cheap! Wrapping an implementation [Arc](std::sync::Arc) might be an easy
 /// solution.
 #[allow(async_fn_in_trait)]
-pub trait Cache<CacheKeyT = CommonCacheKey>: 'static + Clone + Send + Sync
+pub trait Cache<CacheKeyT = CommonCacheKey>
 where
+    Self: 'static + Clone + Send + Sync,
     CacheKeyT: CacheKey,
 {
     /// Get an entry from the cache.

@@ -13,7 +13,7 @@ impl StructGenerator {
                 #tag(self, #quoted_field_name, writer, context)?;
             },
 
-            None => TokenStream::new(),
+            None => Default::default(),
         };
 
         let write_value = field.attribute.value_as.generate_write_value(&field.attribute.value_style);

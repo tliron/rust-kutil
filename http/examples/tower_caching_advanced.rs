@@ -90,7 +90,7 @@ async fn main() {
     // This is *not* required for the caching layer!!!
     // This state is used by the `reset_cache` handler
 
-    let router = Router::new()
+    let router = Router::default()
         .route("/", get(("Hello, world!\n",)))
         .route("/toobig", get(("This response is too big to cache\n".repeat(10),)))
         .route(
@@ -135,7 +135,7 @@ async fn main() {
         .route("/reset", post(reset_cache_handler::<MokaCacheImplementation<_>, _>))
         .with_state(cache.clone()) // for "/reset"
         .layer(
-            CachingLayer::new()
+            CachingLayer::default()
                 .cache(cache.clone())
                 .max_cacheable_body_size(MAX_BODY_SIZE)
                 .cache_key(|context| {

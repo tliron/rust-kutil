@@ -1,4 +1,4 @@
-use super::recipient::*;
+use super::{accumulator::*, recipient::*};
 
 use std::{error::*, fmt, iter::*, slice, vec};
 
@@ -17,11 +17,6 @@ pub struct Errors<ErrorT> {
 
 impl<ErrorT> Errors<ErrorT> {
     /// Constructor.
-    pub fn new() -> Self {
-        Self { errors: Vec::new() }
-    }
-
-    /// Constructor.
     pub fn with_capacity(capacity: usize) -> Self {
         Self { errors: Vec::with_capacity(capacity) }
     }
@@ -35,6 +30,11 @@ impl<ErrorT> Errors<ErrorT> {
     pub fn check(&self) -> Result<(), &Self> {
         if self.is_empty() { Ok(()) } else { Err(self) }
     }
+
+    /// Creates an accumulating [ErrorAccumulator].
+    pub fn as_accumulator(&mut self) -> ErrorAccumulator<'_, ErrorT> {
+        ErrorAccumulator::new(self)
+    }
 }
 
 impl<ErrorT> ErrorRecipient<ErrorT> for Errors<ErrorT> {
@@ -46,7 +46,7 @@ impl<ErrorT> ErrorRecipient<ErrorT> for Errors<ErrorT> {
 
 impl<ErrorT> Default for Errors<ErrorT> {
     fn default() -> Self {
-        Self::new()
+        Self { errors: Default::default() }
     }
 }
 
@@ -114,37 +114,17 @@ impl<ErrorT> Into<Vec<ErrorT>> for Errors<ErrorT> {
 }
 
 //
-// AsErrorsResult
+// ErrorsResult
 //
 
-/// Converts to a [Result] with [Errors].
-pub trait AsErrorsResult<OkT, ErrorT> {
+/// [Result].
+pub trait ErrorsResult<OkT, ErrorT> {
     /// Convert to a [Result] with [Errors].
     fn as_errors(self) -> Result<OkT, Errors<ErrorT>>;
-
-    /// If there is an error then gives it and returns the default value.
-    fn give_or<E, ErrorRecipientT>(self, default: OkT, errors: &mut ErrorRecipientT) -> Result<OkT, E>
-    where
-        ErrorT: Into<E>,
-        ErrorRecipientT: ErrorRecipient<E>;
 }
 
-impl<OkT, ErrorT> AsErrorsResult<OkT, ErrorT> for Result<OkT, ErrorT> {
+impl<OkT, ErrorT> ErrorsResult<OkT, ErrorT> for Result<OkT, ErrorT> {
     fn as_errors(self) -> Result<OkT, Errors<ErrorT>> {
         Ok(self?)
-    }
-
-    fn give_or<IntoErrorT, ErrorRecipientT>(self, default: OkT, errors: &mut ErrorRecipientT) -> Result<OkT, IntoErrorT>
-    where
-        ErrorT: Into<IntoErrorT>,
-        ErrorRecipientT: ErrorRecipient<IntoErrorT>,
-    {
-        match self {
-            Ok(ok) => Ok(ok),
-            Err(error) => {
-                errors.give(error.into())?;
-                Ok(default)
-            }
-        }
     }
 }

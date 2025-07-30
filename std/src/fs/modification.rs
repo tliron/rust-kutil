@@ -9,7 +9,7 @@ where
     PathT: AsRef<Path>,
 {
     let modified = metadata(path)?.modified()?;
-    let mut hasher = DefaultHasher::new();
+    let mut hasher = DefaultHasher::default();
     modified.hash(&mut hasher);
     Ok(hasher.finish())
 }

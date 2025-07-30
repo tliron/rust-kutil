@@ -2,11 +2,12 @@ use super::{bool::*, encoding::*, etag::*, into::*, language::*, media_type::*, 
 
 use {
     base64::{engine::general_purpose::*, *},
-    bytes::Bytes,
-    bytestring::*,
     http::header::*,
     httpdate::*,
-    kutil_std::collections::*,
+    kutil_std::{
+        collections::*,
+        zerocopy::{Bytes, *},
+    },
     std::{any::*, fmt, str::*, time::*},
 };
 
