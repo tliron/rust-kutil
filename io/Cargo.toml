@@ -21,7 +21,7 @@ bytes = "1.10.1"
 futures = "0.3.31"
 kutil-std = "=0.0.6"
 netdev = "0.36.0"
-tokio = { version = "1.46.1", features = ["rt", "io-util"] }
+tokio = { version = "1.47.0", features = ["rt", "io-util"] }
 utf8-chars =  "3.0.5"
 
 [features]

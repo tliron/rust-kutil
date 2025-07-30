@@ -1,7 +1,8 @@
 mod colorize;
 mod completion;
+mod manual;
 mod styles;
 mod version;
 
 #[allow(unused_imports)]
-pub use {colorize::*, completion::*, styles::*, version::*};
+pub use {colorize::*, completion::*, manual::*, styles::*, version::*};
