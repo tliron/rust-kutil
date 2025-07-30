@@ -139,7 +139,7 @@ impl fmt::Display for CommonCacheKey {
             .query
             .as_ref()
             .map(|parameter| {
-                let mut string = String::new();
+                let mut string = String::default();
                 for (key, values) in parameter {
                     for value in values {
                         if !string.is_empty() {
@@ -167,7 +167,7 @@ impl fmt::Display for CommonCacheKey {
             .extensions
             .as_ref()
             .map(|extension| {
-                let mut string = String::new();
+                let mut string = String::default();
                 for (key, value) in extension {
                     if !string.is_empty() {
                         string += "&"

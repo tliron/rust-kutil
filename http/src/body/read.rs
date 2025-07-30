@@ -19,7 +19,10 @@ use {
 ///
 /// See also [BodyReader].
 #[allow(async_fn_in_trait)]
-pub trait ReadBodyIntoBytes: Sized {
+pub trait ReadBodyIntoBytes
+where
+    Self: Sized,
+{
     /// Read entire [Body] into [Bytes] and trailers.
     ///
     /// If `declared_size` is not [None] then that's the size we expect. Otherwise

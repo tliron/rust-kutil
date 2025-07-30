@@ -15,7 +15,7 @@ pub fn certified_key_from_pem(certificates_pem: &[u8], private_key_pem: &[u8]) -
 ///
 /// Returns them in DER (Distinguished Encoding Rules) format.
 pub fn parse_certificates_pem(pem: &[u8]) -> io::Result<Vec<CertificateDer<'static>>> {
-    let mut certificates = Vec::new();
+    let mut certificates = Vec::default();
     for certificate in rustls_pemfile::certs(&mut pem.as_ref()) {
         certificates.push(certificate?);
     }

@@ -37,7 +37,7 @@ impl<BodyT> BodyReader<BodyT> {
             None => BytesMut::with_capacity(0),
         };
 
-        Self { body: Box::pin(body), remainder, trailers: Vec::new() }
+        Self { body: Box::pin(body), remainder, trailers: Default::default() }
     }
 
     /// Back to the inner [Body].
@@ -138,7 +138,10 @@ where
 //
 
 /// Into [BodyReader].
-pub trait IntoBodyReader<BodyT>: Sized {
+pub trait IntoBodyReader<BodyT>
+where
+    Self: Sized,
+{
     /// Into [BodyReader].
     fn into_reader(self) -> BodyReader<BodyT> {
         self.into_reader_with_first_bytes(None)

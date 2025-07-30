@@ -4,7 +4,7 @@ edition = "2024"
 name = "kutil-std-macros"
 description = "Procedural macros for kutil-std"
 version = "0.0.1"
-rust-version = "1.85"
+rust-version = "1.89"
 
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/tliron/rust-kutil"

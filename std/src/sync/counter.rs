@@ -15,3 +15,9 @@ impl Counter {
         self.0.fetch_add(1, Ordering::SeqCst)
     }
 }
+
+impl Default for Counter {
+    fn default() -> Self {
+        Self::new()
+    }
+}

@@ -30,7 +30,7 @@ impl HostRouter {
         match self.routers.len() {
             0 => None,
             1 => self.routers.values().next().cloned(),
-            _ => Some(Router::new().fallback(host_routers_handler).with_state(self)),
+            _ => Some(Router::default().fallback(host_routers_handler).with_state(self)),
         }
     }
 

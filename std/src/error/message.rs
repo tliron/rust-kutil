@@ -8,11 +8,6 @@ macro_rules! message_error {
 
         impl $type {
             /// Constructor.
-            pub fn new() -> Self {
-                Self(::std::option::Option::None)
-            }
-
-            /// Constructor.
             pub fn new_from<DisplayT>(display: DisplayT) -> Self
             where
                 DisplayT: ::std::fmt::Display,

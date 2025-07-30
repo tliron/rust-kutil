@@ -20,7 +20,7 @@ where
     &'own IterableT: 'own + IntoIterator<Item = ItemT>,
 {
     fn join_conjunction(&'own self, conjunction: &str) -> String {
-        let mut options = String::new();
+        let mut options = String::default();
 
         let mut has_at_least_two = false;
         for (item, first, last) in IterateWithFirstLast::new(self) {

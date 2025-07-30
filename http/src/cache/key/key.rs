@@ -10,7 +10,10 @@ use {
 //
 
 /// Cache key.
-pub trait CacheKey: 'static + Clone + fmt::Display + Eq + Hash + Send + CacheWeight + Sync {
+pub trait CacheKey
+where
+    Self: 'static + Clone + fmt::Display + Eq + Hash + Send + CacheWeight + Sync,
+{
     /// Create a cache key for a request.
     fn for_request(method: &Method, uri: &Uri, headers: &HeaderMap) -> Self;
 }

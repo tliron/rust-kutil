@@ -13,6 +13,9 @@ For more information and usage examples see the
 [home page](https://github.com/tliron/rust-kutil).
 */
 
+/// [Any](std::any::Any) utilities.
+pub mod any;
+
 /// Borrow utilities.
 pub mod borrow;
 

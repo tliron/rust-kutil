@@ -25,7 +25,7 @@ pub struct CachingConfiguration {
 //
 
 /// Encoding configuration.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct EncodingConfiguration {
     /// Minimum body size.
     pub min_body_size: usize,

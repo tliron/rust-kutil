@@ -275,14 +275,6 @@ where
     CacheT: Cache<CacheKeyT>,
     CacheKeyT: CacheKey,
 {
-    /// Constructor.
-    pub fn new() -> Self {
-        Self {
-            caching: MiddlewareCachingConfiguration::default(),
-            encoding: MiddlewareEncodingConfiguration::default(),
-        }
-    }
-
     /// Enable cache.
     ///
     /// Not enabled by default.
@@ -460,6 +452,16 @@ where
     pub fn keep_identity_encoding(mut self, keep_identity_encoding: bool) -> Self {
         self.encoding.inner.keep_identity_encoding = keep_identity_encoding;
         self
+    }
+}
+
+impl<RequestBodyT, CacheT, CacheKeyT> Default for CachingLayer<RequestBodyT, CacheT, CacheKeyT>
+where
+    CacheT: Cache<CacheKeyT>,
+    CacheKeyT: CacheKey,
+{
+    fn default() -> Self {
+        Self { caching: Default::default(), encoding: Default::default() }
     }
 }
 

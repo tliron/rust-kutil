@@ -22,7 +22,7 @@ pub trait PathAndQueryUtilities {
     /// Decoded query as map.
     fn decoded_query_map(&self) -> Option<QueryMap> {
         if let Some(decoded_query) = self.decoded_query() {
-            let mut map = QueryMap::new();
+            let mut map = QueryMap::default();
 
             for (name, value) in decoded_query {
                 let name = name.as_ref();
@@ -32,7 +32,7 @@ pub trait PathAndQueryUtilities {
                     }
 
                     None => {
-                        let mut values = BTreeSet::new();
+                        let mut values = BTreeSet::default();
                         values.insert(value.into_owned().into());
                         map.insert(name.into(), values);
                     }

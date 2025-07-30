@@ -41,14 +41,14 @@ impl Theme {
     /// Plain theme.
     pub fn plain() -> Self {
         Self {
-            symbol_style: Style::new(),
-            number_style: Style::new(),
-            string_style: Style::new(),
-            name_style: Style::new(),
-            meta_style: Style::new(),
-            error_style: Style::new(),
-            heading_style: Style::new(),
-            delimiter_style: Style::new(),
+            symbol_style: Default::default(),
+            number_style: Default::default(),
+            string_style: Default::default(),
+            name_style: Default::default(),
+            meta_style: Default::default(),
+            error_style: Default::default(),
+            heading_style: Default::default(),
+            delimiter_style: Default::default(),
         }
     }
 
@@ -168,14 +168,14 @@ impl Theme {
 impl Default for Theme {
     fn default() -> Self {
         Self {
-            symbol_style: Style::new().yellow(),
-            number_style: Style::new().magenta(),
-            string_style: Style::new().cyan(),
-            name_style: Style::new().green(),
-            meta_style: Style::new().blue().italic(),
-            error_style: Style::new().red().bold(),
-            heading_style: Style::new().green().bold().underline(),
-            delimiter_style: Style::new().dimmed(),
+            symbol_style: Style::default().yellow(),
+            number_style: Style::default().magenta(),
+            string_style: Style::default().cyan(),
+            name_style: Style::default().green(),
+            meta_style: Style::default().blue().italic(),
+            error_style: Style::default().red().bold(),
+            heading_style: Style::default().green().bold().underline(),
+            delimiter_style: Style::default().dimmed(),
         }
     }
 }

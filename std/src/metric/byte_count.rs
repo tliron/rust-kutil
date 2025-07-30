@@ -12,27 +12,27 @@ pub struct ByteCount(pub u64);
 
 impl ByteCount {
     /// Constructor.
-    pub fn from_bytes(bytes: u64) -> Self {
+    pub const fn from_bytes(bytes: u64) -> Self {
         Self(bytes)
     }
 
     /// Constructor.
-    pub fn from_kibibytes(kibibytes: u64) -> Self {
+    pub const fn from_kibibytes(kibibytes: u64) -> Self {
         Self(kibibytes * KIBI)
     }
 
     /// Constructor.
-    pub fn from_mebibytes(mebibytes: u64) -> Self {
+    pub const fn from_mebibytes(mebibytes: u64) -> Self {
         Self(mebibytes * MEBI)
     }
 
     /// Constructor.
-    pub fn from_gibibytes(gibibytes: u64) -> Self {
+    pub const fn from_gibibytes(gibibytes: u64) -> Self {
         Self(gibibytes * GIBI)
     }
 
     /// Constructor.
-    pub fn from_tebibytes(tebibytes: u64) -> Self {
+    pub const fn from_tebibytes(tebibytes: u64) -> Self {
         Self(tebibytes * TEBI)
     }
 

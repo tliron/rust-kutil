@@ -1,4 +1,4 @@
-use super::recipient::*;
+use super::{accumulator::*, recipient::*};
 
 use std::{error::*, fmt, iter::*, slice, vec};
 
@@ -17,11 +17,6 @@ pub struct Errors<ErrorT> {
 
 impl<ErrorT> Errors<ErrorT> {
     /// Constructor.
-    pub fn new() -> Self {
-        Self { errors: Vec::new() }
-    }
-
-    /// Constructor.
     pub fn with_capacity(capacity: usize) -> Self {
         Self { errors: Vec::with_capacity(capacity) }
     }
@@ -35,6 +30,11 @@ impl<ErrorT> Errors<ErrorT> {
     pub fn check(&self) -> Result<(), &Self> {
         if self.is_empty() { Ok(()) } else { Err(self) }
     }
+
+    /// Creates an accumulating [ErrorAccumulator].
+    pub fn as_accumulator(&mut self) -> ErrorAccumulator<'_, ErrorT> {
+        ErrorAccumulator::new(self)
+    }
 }
 
 impl<ErrorT> ErrorRecipient<ErrorT> for Errors<ErrorT> {
@@ -46,7 +46,7 @@ impl<ErrorT> ErrorRecipient<ErrorT> for Errors<ErrorT> {
 
 impl<ErrorT> Default for Errors<ErrorT> {
     fn default() -> Self {
-        Self::new()
+        Self { errors: Default::default() }
     }
 }
 

@@ -8,5 +8,5 @@ cd "$ROOT"
 
 for E in $(cargo run --example --package kutil-cli 2>&1 | grep --extended-regexp '^    ' | sort); do
     m "\nexample: $E\n" "$RED"
-	cargo run --quiet --example "$E" --package kutil-cli --features=derive
+	cargo +nightly run --quiet --example "$E" --package kutil-cli --features=derive
 done

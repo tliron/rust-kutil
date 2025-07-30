@@ -11,7 +11,7 @@ struct Node {
 
 impl Node {
     fn new(name: &str) -> Self {
-        Self::new_with(name, Vec::new())
+        Self::new_with(name, Default::default())
     }
 
     fn new_with(name: &str, children: Vec<Node>) -> Self {

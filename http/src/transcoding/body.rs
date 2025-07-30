@@ -121,8 +121,9 @@ where
 //
 
 /// Into a [TranscodingBody].
-pub trait IntoTranscodingBody<BodyT>: Sized
+pub trait IntoTranscodingBody<BodyT>
 where
+    Self: Sized,
     BodyT: Body,
     BodyT::Error: Into<CapturedError>,
 {
