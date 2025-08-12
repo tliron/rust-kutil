@@ -37,7 +37,7 @@ impl EnumGenerator {
                 for item in value {
                     empty = false;
 
-                    child_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_LIST_ITEM)?;
+                    child_context.indent_into(writer, ::kutil::cli::debug::utils::DEBUG_INTO_LIST_ITEM)?;
                     let value = item;
                     #write_value
                 }
@@ -55,19 +55,19 @@ impl EnumGenerator {
                     let mut empty = true;
 
                     match item_context.format {
-                        ::kutil_cli::debug::DebugFormat::Reduced => {
-                            let key_context = item_context.child().with_separator(true).with_format(::kutil_cli::debug::DebugFormat::Compact);
+                        ::kutil::cli::debug::DebugFormat::Reduced => {
+                            let key_context = item_context.child().with_separator(true).with_format(::kutil::cli::debug::DebugFormat::Compact);
                             let value_context = item_context.child().with_inline(true).with_separator(true).increase_indentation();
 
                             for (k, v) in value {
                                 empty = false;
 
-                                item_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_MAP_ENTRY)?;
+                                item_context.indent_into(writer, ::kutil::cli::debug::utils::DEBUG_INTO_MAP_ENTRY)?;
                                 let value = k;
                                 let child_context = &key_context;
                                 #write_key
 
-                                context.theme.write_delimiter(writer, ::kutil_cli::debug::utils::DEBUG_MAP_ENTRY_SEPARATOR)?;
+                                context.theme.write_delimiter(writer, ::kutil::cli::debug::utils::DEBUG_MAP_ENTRY_SEPARATOR)?;
                                 let value = v;
                                 let child_context = &value_context;
                                 #write_value
@@ -80,11 +80,11 @@ impl EnumGenerator {
                             for (k, v) in value {
                                 empty = false;
 
-                                item_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_MAP_KEY)?;
+                                item_context.indent_into(writer, ::kutil::cli::debug::utils::DEBUG_INTO_MAP_KEY)?;
                                 let value = k;
                                 #write_key
 
-                                item_context.indent_into(writer, ::kutil_cli::debug::utils::DEBUG_INTO_MAP_VALUE)?;
+                                item_context.indent_into(writer, ::kutil::cli::debug::utils::DEBUG_INTO_MAP_VALUE)?;
                                 let value = v;
                                 #write_value
                             }
