@@ -13,7 +13,7 @@ Crates:
     [helpers](https://docs.rs/kutil-cli/latest/kutil_cli/clap/index.html)
   * [Initialize logging](https://docs.rs/kutil-cli/latest/kutil_cli/debug/index.html)
     (via [tracing](https://github.com/tokio-rs/tracing))
-  * The [Debuggable trait](https://docs.rs/kutil-cli/latest/kutil_cli/debug/index.html) is a supercharged version of `Debug`
+  * The [Depict trait](https://docs.rs/kutil-cli/latest/kutil_cli/depict/index.html) is a supercharged version of `Debug`
 * [kutil-http](https://docs.rs/kutil-http):
   * [Easy access to headers](https://docs.rs/kutil-http/latest/kutil_http/trait.HeaderValues.html)
   * Conditional HTTP and content negotiation
