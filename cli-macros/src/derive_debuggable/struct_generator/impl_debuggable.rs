@@ -27,7 +27,7 @@ impl StructGenerator {
             #[automatically_derived]
             impl
                 #impl_generics
-                ::kutil_cli::debug::Debuggable
+                ::kutil::cli::debug::Debuggable
                 for #struct_name #struct_generics
                 #where_clause
             {
@@ -37,15 +37,20 @@ impl StructGenerator {
                     (
                         &self,
                         writer: &mut WriteT,
-                        context: &::kutil_cli::debug::DebugContext,
+                        context: &::kutil::cli::debug::DebugContext,
                     )
                     -> ::std::io::Result<()>
                     where WriteT: ::std::io::Write
                 {
-                    context.separate(writer)?;
-                    context.theme.write_heading(writer, #quoted_struct_name)?;
-
                     let context = &context.child().with_separator(true);
+
+                    if match context.get_configuration("heading") {
+                        Some(heading) => heading == "true",
+                        None => true,
+                    } {
+                        context.separate(writer)?;
+                        context.theme.write_heading(writer, #quoted_struct_name)?;
+                    }
 
                     #tag
 

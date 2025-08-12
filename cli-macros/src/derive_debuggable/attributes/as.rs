@@ -47,11 +47,11 @@ impl As {
             }
 
             As::Debuggable => quote! {
-                ::kutil_cli::debug::Debuggable::write_debug_for(value, writer, child_context)?;
+                ::kutil::cli::debug::Debuggable::write_debug_for(value, writer, child_context)?;
             },
 
             As::DynDebuggable => quote! {
-                ::kutil_cli::debug::DynDebuggable::dyn_write_debug_for(
+                ::kutil::cli::debug::DynDebuggable::dyn_write_debug_for(
                     value.as_ref(),
                     ::std::boxed::Box::new(writer),
                     child_context,
