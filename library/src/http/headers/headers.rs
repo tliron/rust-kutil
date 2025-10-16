@@ -268,7 +268,7 @@ pub trait HeaderValues {
 
     /// Parse the [`Content-Encoding`](CONTENT_ENCODING) response header value.
     ///
-    /// Defaults to [Identity](kutil_transcoding::Encoding::Identity) if there is no such header
+    /// Defaults to [Identity](crate::transcoding::Encoding::Identity) if there is no such header
     /// *or* that is malformed.
     fn content_encoding(&self) -> EncodingHeaderValue {
         self.parse_value(CONTENT_ENCODING).unwrap_or_default()

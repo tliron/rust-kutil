@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil"
 description = "Kutil Utilities Collection"
-version = "0.0.1"
+version = "0.0.2"
 rust-version = "1.90"
 
 license = "MIT OR Apache-2.0"
@@ -24,7 +24,7 @@ build-info = { optional = true, version = "0.0.42" }
 clap = { optional = true, version = "4.5.49", features = ["derive"] }
 clap_complete_command = { optional = true, version = "0.6.1" }
 clap_mangen = { optional = true, version = "0.2.30" }
-kutil-cli-macros = { optional = true, version = "=0.0.6" }
+kutil-cli-macros = { optional = true, version = "=0.0.7" }
 owo-colors = { optional = true, version = "4.2.3" }
 time = { optional = true, version = "0.3.44", features = ["macros"] }
 tracing-journald = { optional = true, version = "0.3.1" }
@@ -63,7 +63,7 @@ utf8-chars = { optional = true, version = "3.0.5" }
 bimap = { optional = true, version = "0.6.3" }
 bytes = { optional = true, version = "1.10.1" }
 bytestring = { optional = true, version = "1.5.0" }
-kutil-std-macros = { optional = true, version = "=0.0.2" }
+kutil-std-macros = { optional = true, version = "=0.0.3" }
 num-traits = { optional = true, version = "0.2.19" }
 papaya = { optional = true, version = "0.2.3" }
 rapidhash = { optional = true, version = "4.1.0", features = ["unsafe"] }

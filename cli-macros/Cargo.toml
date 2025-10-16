@@ -3,7 +3,7 @@ edition = "2024"
 
 name = "kutil-cli-macros"
 description = "Procedural macros for kutil::cli"
-version = "0.0.6"
+version = "0.0.7"
 rust-version = "1.90"
 
 license = "MIT OR Apache-2.0"

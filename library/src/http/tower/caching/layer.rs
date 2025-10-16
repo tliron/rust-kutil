@@ -45,13 +45,13 @@ use {
 /// actual cache implementation, the HTTP server, and of course your async runtime.
 ///
 /// Please check out the
-/// [included examples](https://github.com/tliron/kutil/tree/main/crates/http/examples)!
+/// [included examples](https://github.com/tliron/kutil/tree/main/library/examples)!
 ///
 /// Requirements
 /// ============
 ///
 /// The response body type *and* its data type must both implement
-/// [From]\<[Bytes](kutil_std::immutable::Bytes)\>. (This is supported by
+/// [From]\<[Bytes](crate::std::immutable::Bytes)\>. (This is supported by
 /// [axum](https://github.com/tokio-rs/axum).) Note that even though
 /// [Tokio](https://github.com/tokio-rs/tokio) I/O types are used internally, this layer does *not*
 /// require a specific async runtime.
@@ -372,7 +372,7 @@ where
     /// Will be negotiated with the client's preferences (in its `Accept-Encoding` header) to
     /// select the best.
     ///
-    /// There is no need to specify [Identity](kutil_transcoding::Encoding::Identity) as it is
+    /// There is no need to specify [Identity](crate::transcoding::Encoding::Identity) as it is
     /// always enabled.
     ///
     /// The default is [ENCODINGS_BY_PREFERENCE].
@@ -443,7 +443,7 @@ where
         self
     }
 
-    /// Whether to keep an [Identity](kutil_transcoding::Encoding::Identity) in the cache if it is
+    /// Whether to keep an [Identity](crate::transcoding::Encoding::Identity) in the cache if it is
     /// created during reencoding.
     ///
     /// Keeping it optimizes for compute with the trade-off of taking up more room in the cache.

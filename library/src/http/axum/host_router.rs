@@ -30,7 +30,7 @@ impl HostRouter {
         match self.routers.len() {
             0 => None,
             1 => self.routers.values().next().cloned(),
-            _ => Some(Router::default().fallback(host_routers_handler).with_state(self)),
+            _ => Some(Router::default().fallback(host_router_handler).with_state(self)),
         }
     }
 
@@ -69,16 +69,16 @@ impl HostRouter {
     }
 }
 
-/// Axum request handler that calls [HostRouters::handle].
+/// Axum request handler that calls [HostRouter::handle].
 ///
-/// Expects the [HostRouters] to be available as state. See
+/// Expects the [HostRouter] to be available as state. See
 /// [Router::with_state](::axum::Router::with_state).
-pub async fn host_routers_handler(
-    State(mut host_routers): State<HostRouter>,
+pub async fn host_router_handler(
+    State(mut host_router): State<HostRouter>,
     Host(host_and_optional_port): Host,
     request: Request,
 ) -> Response {
-    host_routers
+    host_router
         .handle(host_and_optional_port.into(), request)
         .await
         .unwrap_or_else(|| StatusCode::NOT_FOUND.into_response())

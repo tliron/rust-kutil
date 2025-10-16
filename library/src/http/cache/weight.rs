@@ -15,6 +15,6 @@ pub trait CacheWeight {
     /// the "lighter" item.
     ///
     /// Note that *sums* of weights can be especially misleading in terms of memory use because
-    /// there might be memory shared between items, e.g. via the use of [Bytes](kutil_std::immutable::Bytes).
+    /// there might be memory shared between items, e.g. via the use of [Bytes](crate::std::immutable::Bytes).
     fn cache_weight(&self) -> usize;
 }
